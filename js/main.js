@@ -153,3 +153,100 @@
 
   sections.forEach(function (s) { observer.observe(s); });
 })();
+
+
+/* ---------------------------------------------------------------------------
+   Custom cursor
+   A native CSS cursor cannot scale or rotate — the browser paints it outside
+   the DOM. To animate it we draw our own element and hide the native one.
+   That costs a frame of lag, so the native star in style.css stays as the
+   base layer and this only runs where it is safe:
+     - precise pointer (no touch)
+     - motion not reduced
+   Text fields keep the system I-beam and the star hides over them.
+--------------------------------------------------------------------------- */
+(function () {
+  var fine = window.matchMedia('(hover: hover) and (pointer: fine)');
+  var calm = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (!fine.matches || calm.matches) return;
+
+  var HOT = 'a, button, summary, [role="button"], [tabindex]:not([tabindex="-1"]), label, select';
+  var TEXT = 'input:not([type="button"]):not([type="submit"]):not([type="checkbox"]):not([type="radio"]), textarea, [contenteditable="true"]';
+
+  var star = document.createElement('div');
+  star.className = 'cursor-star';
+  star.setAttribute('aria-hidden', 'true');
+  star.appendChild(document.createElement('i'));
+  document.body.appendChild(star);
+
+  /* Never hide the native cursor on faith.
+     Hiding it is what makes a broken star invisible instead of merely
+     wrong, so the page only goes `cursor: none` after the star's image
+     has actually decoded. If it 404s, is blocked, or the path is wrong,
+     the native star from style.css simply stays on.
+     The URL is read back from the computed style rather than hard-coded, so
+     the probe tests exactly the file CSS will paint and the relative path
+     stays correct from projects/ as well as from the root. */
+  var painted = getComputedStyle(star.firstChild).backgroundImage.match(/url\(["']?(.*?)["']?\)/);
+  if (!painted) return;
+  var probe = new Image();
+  probe.onload = function () { document.documentElement.classList.add('cursor-custom'); };
+  probe.src = painted[1];
+
+  var x = 0, y = 0, queued = false;
+
+  function paint() {
+    queued = false;
+    star.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
+  }
+
+  document.addEventListener('pointermove', function (e) {
+    if (e.pointerType !== 'mouse') return;
+    x = e.clientX; y = e.clientY;
+    if (!queued) { queued = true; requestAnimationFrame(paint); }
+
+    var t = e.target;
+    // Over a text field the system I-beam is doing the work; get out of the way.
+    star.classList.toggle('is-on', !(t.closest && t.closest(TEXT)));
+    star.classList.toggle('is-hot', !!(t.closest && t.closest(HOT)));
+  }, { passive: true });
+
+  document.addEventListener('pointerdown', function () { star.classList.add('is-down'); }, { passive: true });
+  document.addEventListener('pointerup', function () { star.classList.remove('is-down'); }, { passive: true });
+  document.addEventListener('mouseleave', function () { star.classList.remove('is-on'); });
+  window.addEventListener('blur', function () { star.classList.remove('is-on'); });
+
+  // If the user switches to touch or turns on reduced motion mid-session,
+  // stand down and let the native cursor take over again.
+  function standDown() {
+    if (fine.matches && !calm.matches) return;
+    star.remove();
+    document.documentElement.classList.remove('cursor-custom');
+  }
+  fine.addEventListener('change', standDown);
+  calm.addEventListener('change', standDown);
+})();
+
+
+/* ---------------------------------------------------------------------------
+   Nav height -> --nav-h
+   The hero is sized to the screen minus the sticky nav. The nav's height
+   changes with the breakpoint, the font, and whether the role line shows,
+   so it is measured rather than guessed, and re-measured on resize and
+   once webfonts land (a fallback font can change the brand's height).
+--------------------------------------------------------------------------- */
+(function () {
+  var nav = document.querySelector('.nav');
+  var hero = document.querySelector('.hero');
+  if (!nav || !hero) return;
+
+  function sync() {
+    hero.style.setProperty('--nav-h', Math.round(nav.getBoundingClientRect().height) + 'px');
+  }
+  sync();
+
+  if (window.ResizeObserver) new ResizeObserver(sync).observe(nav);
+  else window.addEventListener('resize', sync);
+
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(sync);
+})();

@@ -32,6 +32,11 @@
   --accent-70:    rgba(196, 153, 255, 0.70);
   --accent-soft:  rgba(196, 153, 255, 0.14);
 
+  /* Cursor: reposo en el acento del sitio, oro al pasar sobre lo interactivo.
+     Oro 10.4:1 sobre --bg-deep y 9.2:1 sobre --panel: legible sobre ambos. */
+  --cursor:      var(--accent);   /* horneado en star.png */
+  --cursor-hot:  #E8B94A;         /* horneado en star-gold.png */
+
   /* --- Type --- */
   /* BBH Bartle has no ñ and no accented vowels, and font fallback happens
      PER GLYPH — "Kungatá" would render as Kungat in Bartle plus a lone á in
@@ -55,7 +60,7 @@
   --radius: 12px;
   --radius-sm: 8px;
   --radius-pill: 55px;   /* the pill radius from the Figma buttons */
-  --maxw: 1100px;
+  --maxw: 1300px;
   --p-gutter: 3.5rem;   /* the number column in the project index */
 }
 
@@ -164,7 +169,30 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
   letter-spacing: 0.16em; text-transform: uppercase;
   color: var(--accent); margin-bottom: var(--s-3);
 }
-.hero { padding: clamp(4rem, 14vh, 9rem) 0 var(--s-5); }
+/* The hero owns the first screen: nothing of the next section peeks in.
+   Height units matter here. `vh` on a phone means the viewport with the
+   URL bar HIDDEN, which is taller than what you actually see on load — a
+   hero sized in vh gets its bottom cut off and the next section still
+   shows. `svh` is the viewport with the browser chrome VISIBLE, which is
+   exactly the state at first paint. `dvh` would track the bar as it hides
+   and resize the hero mid-scroll, which reads as a jump.
+   The nav is sticky, so it takes real space in the flow: its height has to
+   come off, or the page is one nav taller than the screen. --nav-h is kept
+   in sync by js/main.js; the value here is the pre-script fallback. */
+.hero {
+  --nav-h: 72px;
+  min-height: calc(100vh - var(--nav-h));
+  min-height: calc(100svh - var(--nav-h));
+  display: flex; align-items: center;
+  padding: clamp(2rem, 7vh, 5rem) 0;
+}
+.hero > .wrap { width: 100%; }
+
+/* Short landscape screens: centring with a tall min-height would push the
+   content off. Let it sit at the top and the hero grow instead. */
+@media (max-height: 520px) {
+  .hero { min-height: 0; align-items: flex-start; padding: var(--s-4) 0; }
+}
 .hero-line {
   font-size: clamp(1.75rem, 4.6vw, 2.5rem);   /* 40px at desktop */
   max-width: 18ch; margin-bottom: var(--s-3);
@@ -339,9 +367,30 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
   .p-body { grid-template-columns: 1fr; max-height: none; }
   .p-text, .p-media { grid-column: 1; }
   .p-media { margin-bottom: var(--s-2); }
-  .p-head { grid-template-columns: 2.2rem 1fr auto; padding-bottom: var(--s-2); }
+  .p-head { grid-template-columns: 2.2rem minmax(0, 1fr) auto; padding-bottom: var(--s-2); }
   .p-arrow { display: none; }
   .p-media video.thumb-motion { display: none; }
+}
+
+/* At 320px the two-line brand leaves too little room and "Contact" gets
+   clipped by the nav's scroll container. The role line is repeated in the
+   hero two scrolls down, so it is the part that can go. */
+@media (max-width: 420px) {
+  .nav-role { display: none; }
+  .nav-name { font-size: 0.72rem; }
+  .nav-inner { padding-left: 0.75rem; padding-right: 0.75rem; gap: 0.6rem; }
+  .nav-links { gap: 0.6rem; }
+  .nav-links a { font-size: 0.66rem; letter-spacing: 0.05em; }
+}
+
+/* Very small phones (≤360px, e.g. iPhone SE). "Solo Project" is nowrap and
+   sits in an `auto` column, so below this width the title and the kind label
+   cannot both fit on one line and the row pushes the document wider than the
+   screen. Dropping the kind onto its own row fixes the cause rather than
+   clipping the symptom with overflow-x. */
+@media (max-width: 380px) {
+  .p-head { grid-template-columns: 2.2rem minmax(0, 1fr); row-gap: 0.35rem; }
+  .p-kind { grid-column: 2; }
 }
 
 /* ---------- Tags ---------- */
@@ -512,4 +561,62 @@ footer .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-cont
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   * { transition: none !important; }
+}
+
+/* ---------- Cursor ---------- */
+/* Two layers, on purpose.
+   1. A real native cursor on <html>. It is there before JS runs, on touch
+      devices, and if the script ever fails. 22px is well under the 128px
+      ceiling browsers silently ignore; the hotspot is the star's centre.
+   2. A DOM element on top (see js/main.js) that can do what a native cursor
+      cannot: grow and rotate. It only turns on for a precise pointer with
+      motion allowed, and it hides the native one only while it is active. */
+html { cursor: url('../assets/cursor/star-sm.png') 11 11, auto; }
+
+/* Text entry always keeps the system I-beam. Style never makes typing harder. */
+input, textarea, [contenteditable="true"] { cursor: text; }
+
+/* Set by JS once the custom layer is running. `cursor` inherits, so this
+   covers the whole page while the rules above keep their own cursor. */
+.cursor-custom, .cursor-custom a, .cursor-custom button, .cursor-custom summary { cursor: none; }
+
+.cursor-star {
+  position: fixed; top: 0; left: 0;
+  width: 22px; height: 22px; margin: -11px 0 0 -11px;
+  pointer-events: none; z-index: 9999;
+  transform: translate3d(-100px, -100px, 0);
+  will-change: transform;
+  /* Follows the silhouette, so the star stays readable over light thumbnails. */
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.55));
+  opacity: 0; transition: opacity 0.15s;
+}
+.cursor-star.is-on { opacity: 1; }
+/* Inner element carries scale and rotation so they never fight the
+   per-frame translate on the parent. */
+/* Two stacked images, cross-faded, rather than one recoloured CSS mask.
+   A mask would keep the colour in a token, but masks are the one CSS image
+   feature Chrome refuses to load cross-origin — including from file:// —
+   and a mask that fails to load leaves the page with no visible cursor at
+   all, because the native one is hidden. Plain images always load. */
+.cursor-star i {
+  display: block; position: relative; width: 100%; height: 100%;
+  background: url('../assets/cursor/star.png') center / contain no-repeat;
+  scale: 1; rotate: 0deg;
+  transition: scale 0.22s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+.cursor-star i::after {
+  content: ''; position: absolute; inset: 0;
+  background: url('../assets/cursor/star-gold.png') center / contain no-repeat;
+  opacity: 0; transition: opacity 0.2s ease;
+}
+.cursor-star.is-hot i { scale: 1.65; animation: cursor-spin 6s linear infinite; }
+.cursor-star.is-hot i::after { opacity: 1; }
+.cursor-star.is-down i { scale: 1.2; }
+@keyframes cursor-spin { to { rotate: 360deg; } }
+
+/* Belt and braces: no custom layer where a pointer is imprecise or motion
+   is reduced. The native star from rule 1 still applies. */
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .cursor-star { display: none; }
+  .cursor-custom, .cursor-custom a, .cursor-custom button, .cursor-custom summary { cursor: url('../assets/cursor/star-sm.png') 11 11, auto; }
 }
