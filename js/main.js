@@ -250,3 +250,56 @@
 
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(sync);
 })();
+
+
+/* ---------------------------------------------------------------------------
+   Hamburger menu (mobile only)
+   The button ships hidden and the panel styles are scoped to .nav-js, so the
+   collapsed state only exists once this runs. Without it the three links
+   stay on screen — a menu that cannot be opened is worse than no menu.
+--------------------------------------------------------------------------- */
+(function () {
+  var btn = document.querySelector('.nav-toggle');
+  var menu = document.getElementById('nav-menu');
+  var nav = document.querySelector('.nav');
+  if (!btn || !menu || !nav) return;
+
+  btn.hidden = false;
+  document.documentElement.classList.add('nav-js');
+
+  var mobile = window.matchMedia('(max-width: 760px)');
+
+  function setOpen(open) {
+    btn.setAttribute('aria-expanded', String(open));
+    btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    menu.classList.toggle('is-open', open);
+  }
+  function isOpen() { return btn.getAttribute('aria-expanded') === 'true'; }
+  function close(refocus) {
+    if (!isOpen()) return;
+    setOpen(false);
+    if (refocus) btn.focus();
+  }
+
+  btn.addEventListener('click', function () {
+    var open = !isOpen();
+    setOpen(open);
+    // Moving focus into the panel is what makes it usable from a keyboard;
+    // without it the next Tab would land on whatever follows the button.
+    if (open) { var first = menu.querySelector('a'); if (first) first.focus(); }
+  });
+
+  // Follow a link and the panel has done its job.
+  menu.addEventListener('click', function (e) { if (e.target.closest('a')) close(false); });
+
+  // Escape closes and hands focus back to the control that opened it.
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(true); });
+
+  // A tap outside is the other way people expect to dismiss it.
+  document.addEventListener('click', function (e) {
+    if (isOpen() && !nav.contains(e.target)) close(false);
+  });
+
+  // Crossing into desktop must not leave the panel in a half state.
+  mobile.addEventListener('change', function (m) { if (!m.matches) close(false); });
+})();

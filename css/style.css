@@ -157,9 +157,69 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
 @media (max-width: 760px) {
   .nav-inner { padding: var(--s-2); }
   .nav-right { gap: var(--s-2); min-width: 0; }
+  /* Fallback layout, used when the toggle is not running. */
   .nav-links { gap: var(--s-2); overflow-x: auto; scrollbar-width: none; min-width: 0; }
   .nav-links::-webkit-scrollbar { display: none; }
   .nav-links a { white-space: nowrap; }
+}
+
+/* ---------- Hamburger ----------
+   Mobile only: with three links there is no case for hiding the nav on a
+   desktop, where they cost nothing and reading them is free.
+   Every rule below is scoped to .nav-js, a class js/main.js adds once the
+   toggle is wired. If the script never runs, none of this applies and the
+   plain link row above stays — a menu you cannot open is worse than no
+   menu, so the collapsed state is never the default. */
+.nav-toggle {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px;            /* full tap target, not just the glyph */
+  background: none; border: 1px solid var(--purple); border-radius: var(--radius-sm);
+  color: var(--text); padding: 0;
+  transition: border-color 0.18s, color 0.18s;
+}
+.nav-toggle:hover, .nav-toggle:focus-visible { border-color: var(--accent); color: var(--accent); }
+/* One bar is the element, the other two are its pseudo-elements. */
+.nav-toggle-bars, .nav-toggle-bars::before, .nav-toggle-bars::after {
+  content: ''; display: block;
+  width: 18px; height: 1.5px; background: currentColor; border-radius: 2px;
+  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.3, 1), opacity 0.18s;
+}
+.nav-toggle-bars { position: relative; }
+.nav-toggle-bars::before { position: absolute; top: -6px; }
+.nav-toggle-bars::after  { position: absolute; top:  6px; }
+/* Open: middle bar fades, outer two meet in the centre and cross. */
+.nav-toggle[aria-expanded="true"] .nav-toggle-bars { background: transparent; }
+.nav-toggle[aria-expanded="true"] .nav-toggle-bars::before { transform: translateY(6px) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] .nav-toggle-bars::after  { transform: translateY(-6px) rotate(-45deg); }
+
+@media (max-width: 760px) {
+  .nav-js .nav-links {
+    position: absolute; top: 100%; left: 0; right: 0;
+    flex-direction: column; align-items: stretch; gap: 0;
+    overflow: visible;
+    background: var(--bg-deep);
+    border-bottom: 1px solid var(--purple-soft);
+    padding: var(--s-1) var(--s-2) var(--s-2);
+    /* Animated with transform and opacity only, so it composites on the GPU.
+       visibility is what keeps the closed panel out of the tab order. */
+    transform: translateY(-8px); opacity: 0; visibility: hidden;
+    transition: transform 0.24s cubic-bezier(0.2, 0.8, 0.3, 1), opacity 0.2s, visibility 0s 0.24s;
+  }
+  .nav-js .nav-links.is-open {
+    transform: translateY(0); opacity: 1; visibility: visible;
+    transition: transform 0.24s cubic-bezier(0.2, 0.8, 0.3, 1), opacity 0.2s, visibility 0s;
+  }
+  .nav-js .nav-links li { border-bottom: 1px solid var(--purple-soft); }
+  .nav-js .nav-links li:last-child { border-bottom: none; }
+  .nav-js .nav-links a {
+    display: block; padding: 0.85rem 0.25rem;   /* 44px-tall rows */
+    font-size: 0.8rem; letter-spacing: 0.1em;
+  }
+}
+
+/* Desktop: the toggle never shows, whatever JS did. */
+@media (min-width: 761px) {
+  .nav-toggle { display: none; }
 }
 
 /* ---------- Hero ---------- */

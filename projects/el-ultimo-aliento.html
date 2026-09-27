@@ -40,7 +40,14 @@
   <div class="nav-inner">
     <a class="nav-brand" href="../index.html">Aleja&nbsp;Urueña</a>
     <div class="nav-right">
-      <ul class="nav-links">
+      <!-- Present in the markup but hidden: js/main.js unhides it and only
+           then switches the list into a panel. Without JS the three links
+           stay visible, so the nav can never end up unreachable. -->
+      <button class="nav-toggle" type="button" hidden
+              aria-expanded="false" aria-controls="nav-menu" aria-label="Open menu">
+        <span class="nav-toggle-bars" aria-hidden="true"></span>
+      </button>
+      <ul class="nav-links" id="nav-menu">
         <li><a href="../index.html#work">Work</a></li>
         <li><a href="../index.html#about">About</a></li>
         <li><a href="../index.html#contact">Contact</a></li>
