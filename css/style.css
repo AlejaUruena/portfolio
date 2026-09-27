@@ -25,9 +25,12 @@
   --text-faint:   rgba(243, 243, 243, 0.52);
   --ink:          #1B1A1C;   /* text on light fills */
 
-  --accent:       #FBC651;
-  --accent-70:    rgba(251, 198, 81, 0.70);   /* Figma: Accent 70% */
-  --accent-soft:  rgba(251, 198, 81, 0.14);
+  /* Accent: the Figma lilac hue (265°) taken to 80% lightness.
+     8.26 on the background — AAA for normal text — while the flattened
+     #A27BD9 sat at 5.63. Same colour family, more signal. */
+  --accent:       #C499FF;
+  --accent-70:    rgba(196, 153, 255, 0.70);
+  --accent-soft:  rgba(196, 153, 255, 0.14);
 
   /* --- Type --- */
   /* BBH Bartle has no ñ and no accented vowels, and font fallback happens
@@ -53,6 +56,7 @@
   --radius-sm: 8px;
   --radius-pill: 55px;   /* the pill radius from the Figma buttons */
   --maxw: 1100px;
+  --p-gutter: 3.5rem;   /* the number column in the project index */
 }
 
 /* ---------- Reset ---------- */
@@ -160,8 +164,28 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
   letter-spacing: 0.16em; text-transform: uppercase;
   color: var(--accent); margin-bottom: var(--s-3);
 }
-.hero h1 { font-size: clamp(2rem, 5.2vw, 3.4rem); max-width: 20ch; margin-bottom: var(--s-3); }
-.hero .pitch, .hero .bridge { font-size: 1.05rem; color: var(--text-dim); max-width: 58ch; }
+.hero { padding: clamp(4rem, 14vh, 9rem) 0 var(--s-5); }
+.hero-line {
+  font-size: clamp(1.75rem, 4.6vw, 2.5rem);   /* 40px at desktop */
+  max-width: 18ch; margin-bottom: var(--s-3);
+  text-wrap: balance;
+}
+/* Subordinate to the display line, but still the first thing that explains
+   what she actually does. */
+.hero-sub {
+  font-size: clamp(1rem, 2.1vw, 1.5rem);      /* 24px at desktop */
+  line-height: 1.45; color: var(--text-dim);
+  max-width: 42ch; margin-bottom: var(--s-4);
+  text-wrap: pretty;
+}
+.hero .tool-list { margin-bottom: var(--s-2); }
+
+/* Intro band, offset to the right — the page stops being one centred column. */
+.intro { border-top: 1px solid var(--purple-soft); padding: var(--s-5) 0; }
+.intro-body { max-width: 56ch; margin-left: auto; }
+.intro-lead { font-size: clamp(1.1rem, 2.2vw, 1.45rem); color: var(--text); margin-bottom: var(--s-2); }
+.intro-body p { color: var(--text-dim); }
+@media (max-width: 760px) { .intro-body { margin-left: 0; } }
 
 /* ---------- Tool row ----------
    Icons are SVG masks filled with currentColor, so a single CSS property
@@ -201,8 +225,12 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
 .btn-row { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-top: var(--s-4); }
 .btn {
   display: inline-block;
-  font-family: var(--font-body); font-size: 0.9rem; font-weight: 500;
-  padding: 0.6em 1.6em;
+  /* Aleo, not the label face: the nav bar and the vertical tabs keep
+     Michroma; everything that is pressed rather than navigated reads in
+     the body voice. Padding is in px so the tap target stays at 44px. */
+  font-family: var(--font-body); font-size: 0.85rem; font-weight: 500;
+  letter-spacing: 0.02em;
+  padding: 14px 26px; line-height: 1.2;
   border-radius: var(--radius-pill);
   border: 1px solid var(--text);
   color: var(--text);
@@ -229,80 +257,92 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
 .vertical-btn[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
 @media (max-width: 480px) { .vertical-btn { padding: 0.9em 0.6em; font-size: 0.66rem; } }
 
-/* ---------- Project cards: compact grid, image on top ----------
-   auto-fill with a 300px floor gives 3 per row on a wide screen, 2 on a
-   laptop and 1 on a phone, without a single media query. */
-.project-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: var(--s-3);
-  align-items: start;
-}
+/* ---------- Project index ----------
+   Rows, not cards. Collapsed, a row shows number, title and project type —
+   enough to scan the whole body of work in one screen. Copy, tools and media
+   open on hover OR keyboard focus; on touch every row ships open, because a
+   gesture that does not exist cannot be the only way to reach content. */
+.p-index-list { counter-reset: prow; border-top: 1px solid var(--purple-soft); }
 
-.project-card {
-  display: flex; flex-direction: column;
-  background: var(--panel);
-  border: 1px solid var(--purple-soft);
-  border-radius: var(--radius);
-  overflow: hidden;
+.p-row {
+  display: block; counter-increment: prow;
+  border-bottom: 1px solid var(--purple-soft);
   color: inherit;
-  height: 100%;
-  transition: border-color 0.18s, transform 0.18s;
+  transition: background 0.25s;
 }
-.project-card:hover { text-decoration: none; border-color: var(--accent-70); transform: translateY(-3px); }
+.p-row:hover, .p-row:focus-within { text-decoration: none; background: rgba(71, 44, 80, 0.22); }
 
-/* The thumbnail stays sharp — in a UI/UX portfolio the thumbnail IS evidence.
-   The gradient now sits on the seam BELOW the image, fading from the opaque
-   panel colour upward, so text contrast never depends on the image. */
-.project-thumb { position: relative; aspect-ratio: 16 / 9; background: var(--panel-2); overflow: hidden; }
-.project-thumb img, .project-thumb video { width: 100%; height: 100%; object-fit: cover; display: block; }
-.project-thumb::after {
-  content: ""; position: absolute; inset: auto 0 0 0; height: 38%;
-  background: linear-gradient(to top, var(--panel) 0%, rgba(42, 25, 48, 0) 100%);
-  pointer-events: none;
+.p-head {
+  display: grid;
+  grid-template-columns: var(--p-gutter) 1fr auto 2rem;
+  align-items: baseline; gap: var(--s-2);
+  padding: var(--s-3) 0;
 }
+.p-index::before {
+  content: counter(prow, decimal-leading-zero);
+  font-family: var(--font-label); font-size: 0.7rem;
+  color: var(--text-faint); letter-spacing: 0.1em;
+}
+.p-title {
+  font-family: var(--font-proper);
+  font-size: clamp(1.05rem, 2.2vw, 1.6rem);
+  text-transform: uppercase; letter-spacing: 0.01em;
+  color: var(--text); transition: color 0.2s;
+}
+.p-row:hover .p-title, .p-row:focus-within .p-title { color: var(--accent); }
+.p-kind {
+  font-family: var(--font-tag); font-style: italic;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  font-size: 0.9rem; color: var(--text-faint); white-space: nowrap;
+}
+.p-arrow {
+  color: var(--text-faint); justify-self: end;
+  transition: transform 0.25s, color 0.25s;
+}
+.p-row:hover .p-arrow, .p-row:focus-within .p-arrow { color: var(--accent); transform: translateX(4px); }
 
-.thumb-motion {
-  position: absolute; inset: 0;
-  opacity: 0; transition: opacity 0.25s ease;
-  pointer-events: none;
+/* max-height rather than the grid-row trick: it animates in every browser
+   shipping today, and a wrong guess here would hide content, not just skip
+   an animation. */
+.p-body {
+  display: grid;
+  grid-template-columns: var(--p-gutter) 1fr minmax(200px, 38%);
+  gap: 0 var(--s-3);
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.38s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
-.project-card.is-playing .thumb-motion { opacity: 1; }
+.p-row:hover .p-body, .p-row:focus-within .p-body { max-height: 26rem; }
 
-.thumb-motion-hint {
-  position: absolute; right: var(--s-1); top: var(--s-1); z-index: 2;
-  font-family: var(--font-label); font-size: 0.52rem;
-  letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--text); background: rgba(25, 16, 28, 0.72);
-  padding: 0.35em 0.6em; border-radius: var(--radius-pill);
-  transition: opacity 0.2s;
-}
-.project-card.is-playing .thumb-motion-hint { opacity: 0; }
+.p-text { grid-column: 2; display: block; padding-bottom: var(--s-3); }
+.p-copy { display: block; color: var(--text-dim); font-size: 0.95rem; margin-bottom: var(--s-2); max-width: 52ch; }
 
-/* No pointer, no hover: the hint is a lie on a touch screen.
-   `.project-thumb video` (class + element) outranks a bare `.thumb-motion`,
-   so this selector has to match that weight or display:block wins. */
-@media (hover: none), (pointer: coarse) {
-  .project-thumb video.thumb-motion,
-  .thumb-motion-hint { display: none; }
+.p-media {
+  grid-column: 3; display: block; position: relative;
+  aspect-ratio: 16 / 9; margin-bottom: var(--s-3);
+  background: var(--panel-2); overflow: hidden;
+  border-radius: var(--radius-sm); border: 1px solid var(--purple-soft);
 }
+.p-media img, .p-media video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.thumb-motion { position: absolute; inset: 0; opacity: 0; transition: opacity 0.25s ease; pointer-events: none; }
+.p-row.is-playing .thumb-motion { opacity: 1; }
 
 .thumb-empty {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-label); font-size: 0.58rem; color: var(--text-faint);
+  font-family: var(--font-label); font-size: 0.55rem; color: var(--text-faint);
   text-align: center; padding: var(--s-2); letter-spacing: 0.06em;
-  border-bottom: 1px dashed var(--purple);
 }
 
-.project-text { padding: var(--s-3); display: flex; flex-direction: column; flex: 1; }
-.project-text h3 {
-  font-family: var(--font-proper);
-  font-size: 0.95rem; letter-spacing: 0.02em; line-height: 1.35;
-  text-transform: uppercase; color: var(--text); margin-bottom: var(--s-2);
+/* Touch and narrow screens: every row ships open, media above the copy. */
+@media (hover: none), (pointer: coarse), (max-width: 760px) {
+  .p-body { grid-template-columns: 1fr; max-height: none; }
+  .p-text, .p-media { grid-column: 1; }
+  .p-media { margin-bottom: var(--s-2); }
+  .p-head { grid-template-columns: 2.2rem 1fr auto; padding-bottom: var(--s-2); }
+  .p-arrow { display: none; }
+  .p-media video.thumb-motion { display: none; }
 }
-.project-card:hover .project-text h3 { color: var(--accent); }
-.project-text p { color: var(--text-dim); font-size: 0.9rem; flex: 1; margin-bottom: var(--s-2); }
 
 /* ---------- Tags ---------- */
 .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
@@ -412,10 +452,52 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
    Two exits — next piece in this vertical, or cross to the other one. */
 .case-nav { display: flex; flex-wrap: wrap; gap: var(--s-2); padding-top: var(--s-4); margin-top: var(--s-5); border-top: 1px solid var(--purple-soft); }
 
-/* ---------- Contact / footer ---------- */
-.contact-links { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-top: var(--s-3); }
+/* ---------- Contact ----------
+   The one centred block on the page. Everything else is left-aligned or
+   offset, so centring here reads as an ending rather than a default. */
+#contact { text-align: center; }
+.contact-body { max-width: 30rem; margin: 0 auto; }
+#contact .section-title { text-wrap: balance; }
+.contact-line { color: var(--text-dim); margin-bottom: var(--s-4); }
+
+/* ---------- Social icon links ----------
+   Ring is always visible, so the target exists even before an icon loads,
+   and the 44px box is a real tap target rather than a 20px glyph. */
+.social {
+  display: flex; gap: var(--s-2);
+  list-style: none; margin: 0; padding: 0;
+  justify-content: center;
+}
+.icon-link {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px;
+  border: 1px solid var(--purple); border-radius: 50%;
+  color: var(--text-dim);
+  transition: color 0.18s, border-color 0.18s, transform 0.18s;
+}
+.icon-link:hover, .icon-link:focus-visible {
+  color: var(--accent); border-color: var(--accent); transform: translateY(-2px);
+  text-decoration: none;
+}
+.icon-link i {
+  width: 22px; height: 22px;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center; mask-position: center;
+  -webkit-mask-size: contain; mask-size: contain;
+}
+.i-linkedin { -webkit-mask-image: url('../assets/icons/linkedin.svg'); mask-image: url('../assets/icons/linkedin.svg'); }
+.i-mail     { -webkit-mask-image: url('../assets/icons/mail.svg');     mask-image: url('../assets/icons/mail.svg'); }
+.i-github   { -webkit-mask-image: url('../assets/icons/github.svg');   mask-image: url('../assets/icons/github.svg'); }
+
+.social-sm { justify-content: flex-start; gap: var(--s-1); }
+.social-sm .icon-link { width: 36px; height: 36px; }
+.social-sm .icon-link i { width: 19px; height: 19px; }
+
+/* ---------- Footer ---------- */
 footer { border-top: 1px solid var(--purple-soft); padding: var(--s-4) 0; color: var(--text-faint); font-size: 0.82rem; }
-footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--s-2); }
+footer .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-2); }
+.copyright { font-family: var(--font-body); font-size: 0.8rem; letter-spacing: 0.06em; }
 
 /* ---------- Responsive: card stacks, text first ---------- */
 @media (max-width: 720px) {

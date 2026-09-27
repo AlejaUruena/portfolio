@@ -82,7 +82,7 @@
   var stillMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   if (canHover) {
-    document.querySelectorAll('.project-card').forEach(function (card) {
+    document.querySelectorAll('.p-row').forEach(function (card) {
       var clip = card.querySelector('.thumb-motion');
       if (!clip) return;
 
@@ -102,8 +102,39 @@
         clip.pause();
         clip.currentTime = 0;
       });
+
+      /* A keyboard user tabbing onto the row gets the same thing a pointer
+         gets: CSS opens it via :focus-within, this starts the clip. */
+      card.addEventListener('focus', function () {
+        if (stillMotion.matches) return;
+        card.classList.add('is-playing');
+        var playing = clip.play();
+        if (playing && playing.catch) playing.catch(function () {
+          card.classList.remove('is-playing');
+        });
+      });
+      card.addEventListener('blur', function () {
+        card.classList.remove('is-playing');
+        clip.pause();
+        clip.currentTime = 0;
+      });
     });
   }
+
+  /* ---------------------------------------------------------------
+     Hero entry buttons: jump to Work with a vertical already chosen.
+     They are an entry point, not a second copy of the filter — the tabs
+     inside Work stay, for switching once you are there.
+     --------------------------------------------------------------- */
+  document.querySelectorAll('[data-enter]').forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      var target = document.getElementById('work');
+      if (!target) return;              /* let the href do its job */
+      e.preventDefault();
+      select(link.dataset.enter, true);
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
 
   /* Highlight the section currently in view. */
   var sections = document.querySelectorAll('main section[id]');

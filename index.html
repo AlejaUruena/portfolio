@@ -15,7 +15,7 @@
 <meta property="og:title" content="Alejandra Urueña — Technical UX/UI Designer">
 <meta property="og:description" content="Technical Designer specializing in UX/UI for digital media and games.">
 <meta property="og:type" content="website">
-<!-- <meta property="og:image" content="https://alejandra-uruena.github.io/portfolio/assets/og-image.png"> -->
+<!-- <meta property="og:image" content="https://alejauruena.github.io/portfolio/assets/og-image.png"> -->
 
 <link rel="stylesheet" href="css/style.css">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>▲</text></svg>">
@@ -52,38 +52,43 @@
 <!-- ============ HERO ============ -->
 <header class="hero">
   <div class="wrap">
-    <h1>Hi there!</h1>
+    <h1 class="hero-line">Designs that tell stories</h1>
 
-    <p class="pitch">
-      I'm Ale, Technical Designer specializing in UX/UI for digital media and games.
-      I love designing experiences that connect with people, and bringing them to life
-      with development.
+    <p class="hero-sub">
+      I design experiences that connect with people, and bring them to life with development.
     </p>
 
-    <p class="bridge">
-      My specialties include user-centered design, prototyping, and storytelling.
-    </p>
+    <!-- No "Tools" label: the marks and names carry it. -->
+    <ul class="tool-list">
+      <li class="tool"><i class="i-figma" aria-hidden="true"></i>Figma</li>
+      <li class="tool"><i class="i-unity" aria-hidden="true"></i>Unity</li>
+      <li class="tool"><i class="i-unreal" aria-hidden="true"></i>Unreal Engine</li>
+      <li class="tool">HTML/CSS</li>
+      <li class="tool"><i class="i-adobe" aria-hidden="true"></i>Adobe</li>
+    </ul>
 
-    <!-- Icons are CSS masks filled with currentColor, so colour is controlled
-         entirely from the stylesheet. HTML/CSS has no brand mark, so it rides
-         as a text-only chip. -->
-    <div class="toolbar">
-      <p class="toolbar-label">Tools</p>
-      <ul class="tool-list">
-        <li class="tool"><i class="i-figma" aria-hidden="true"></i>Figma</li>
-        <li class="tool"><i class="i-unity" aria-hidden="true"></i>Unity</li>
-        <li class="tool"><i class="i-unreal" aria-hidden="true"></i>Unreal Engine</li>
-        <li class="tool">HTML/CSS</li>
-        <li class="tool"><i class="i-adobe" aria-hidden="true"></i>Adobe</li>
-      </ul>
-    </div>
-
+    <!-- These are entry points, not a second copy of the filter: they jump to
+         Work with a vertical already chosen. The tabs inside Work stay, for
+         switching once you are there. -->
     <div class="btn-row">
-      <a class="btn btn-primary" href="#work">View work</a>
-      <a class="btn" href="#contact">Get in touch</a>
+      <a class="btn btn-primary" href="#work" data-enter="product">Digital product</a>
+      <a class="btn" href="?v=games#work" data-enter="games">Game UI</a>
     </div>
   </div>
 </header>
+
+<!-- ============ INTRO ============ -->
+<section id="intro" class="intro">
+  <div class="wrap">
+    <div class="intro-body">
+      <p class="intro-lead">
+        Hi there, I'm Ale, Technical Designer specializing in UX/UI for digital media
+        and games.
+      </p>
+      <p>My specialties include user-centered design, prototyping, and storytelling.</p>
+    </div>
+  </div>
+</section>
 
 <!-- ============ WORK ============ -->
 <section id="work">
@@ -107,136 +112,161 @@
     </div>
 
     <!-- ---------- DIGITAL PRODUCT ---------- -->
-    <div class="project-list" id="panel-product" role="tabpanel" aria-labelledby="tab-product">
-
-      <a class="project-card" href="projects/necronomicon.html">
-        <div class="project-thumb">
-          <img src="assets/thumbs/necronomicon.jpg" alt="Necronomicón character sheet and creature screens" loading="lazy" decoding="async">
-          <video class="thumb-motion" muted loop playsinline preload="none"
-                 poster="assets/thumbs/necronomicon.jpg" aria-hidden="true">
-            <source src="assets/thumbs/necronomicon.webm" type="video/webm">
-            <source src="assets/thumbs/necronomicon.mp4" type="video/mp4">
-          </video>
-          <span class="thumb-motion-hint">Hover</span>
-        </div>
-        <div class="project-text">
-          <h3>Necronomicón</h3>
-          <p>For this lovecraftian-inspired app, I designed and prototyped UI to solve pain points in table top RPG players' journey.</p>
-          <div class="tags">
-            <span class="tag tag-role">Solo Project</span>
+    <div class="p-index-list" id="panel-product" role="tabpanel" aria-labelledby="tab-product">
+      <a class="p-row" href="projects/necronomicon.html">
+        <span class="p-head">
+          <span class="p-index" aria-hidden="true"></span>
+          <span class="p-title">Necronomicón</span>
+          <span class="p-kind">Solo Project</span>
+          <span class="p-arrow" aria-hidden="true">&#8594;</span>
+        </span>
+        <span class="p-body">
+          <span class="p-text">
+            <span class="p-copy">For this lovecraftian-inspired app, I designed and prototyped UI to solve pain points in table top RPG players' journey.</span>
+            <span class="tags">
             <span class="tag tag-tool">Figma</span>
             <span class="tag tag-tool">Paper prototyping</span>
+            </span>
+          </span>
+          <div class="p-media">
+            <img src="assets/thumbs/necronomicon.jpg" alt="Necronomicón character sheet and creature screens" loading="lazy" decoding="async">
+            <video class="thumb-motion" muted loop playsinline preload="none"
+                   poster="assets/thumbs/necronomicon.jpg" aria-hidden="true">
+              <source src="assets/thumbs/necronomicon.webm" type="video/webm">
+              <source src="assets/thumbs/necronomicon.mp4" type="video/mp4">
+            </video>
           </div>
-        </div>
+        </span>
       </a>
 
-      <a class="project-card" href="projects/umbrella-corp.html">
-        <div class="project-thumb">
-          <img src="assets/thumbs/umbrella-corp.jpg" alt="Umbrella Corp site shown across desktop, tablet and phone" loading="lazy" decoding="async">
-          <video class="thumb-motion" muted loop playsinline preload="none"
-                 poster="assets/thumbs/umbrella-corp.jpg" aria-hidden="true">
-            <source src="assets/thumbs/umbrella-corp.webm" type="video/webm">
-            <source src="assets/thumbs/umbrella-corp.mp4" type="video/mp4">
-          </video>
-          <span class="thumb-motion-hint">Hover</span>
-        </div>
-        <div class="project-text">
-          <h3>Umbrella Corp Web</h3>
-          <p>I created unique iconography and followed the client's visual identity in a website tailored with responsive design. The goal was to take a fictional corporation and bring it to life.</p>
-          <div class="tags">
-            <span class="tag tag-role">Solo Project</span>
+      <a class="p-row" href="projects/umbrella-corp.html">
+        <span class="p-head">
+          <span class="p-index" aria-hidden="true"></span>
+          <span class="p-title">Umbrella Corp Web</span>
+          <span class="p-kind">Solo Project</span>
+          <span class="p-arrow" aria-hidden="true">&#8594;</span>
+        </span>
+        <span class="p-body">
+          <span class="p-text">
+            <span class="p-copy">I created unique iconography and followed the client's visual identity in a website tailored with responsive design. The goal was to take a fictional corporation and bring it to life.</span>
+            <span class="tags">
             <span class="tag tag-tool">Figma</span>
             <span class="tag tag-tool">Miro</span>
+            </span>
+          </span>
+          <div class="p-media">
+            <img src="assets/thumbs/umbrella-corp.jpg" alt="Umbrella Corp site shown across desktop, tablet and phone" loading="lazy" decoding="async">
+            <video class="thumb-motion" muted loop playsinline preload="none"
+                   poster="assets/thumbs/umbrella-corp.jpg" aria-hidden="true">
+              <source src="assets/thumbs/umbrella-corp.webm" type="video/webm">
+              <source src="assets/thumbs/umbrella-corp.mp4" type="video/mp4">
+            </video>
           </div>
-        </div>
+        </span>
       </a>
 
-      <a class="project-card" href="projects/maloka.html">
-        <div class="project-thumb">
-          <img src="assets/thumbs/maloka.jpg" alt="Universo Maloka app screens" loading="lazy" decoding="async">
-          <video class="thumb-motion" muted loop playsinline preload="none"
-                 poster="assets/thumbs/maloka.jpg" aria-hidden="true">
-            <source src="assets/thumbs/maloka.webm" type="video/webm">
-            <source src="assets/thumbs/maloka.mp4" type="video/mp4">
-          </video>
-          <span class="thumb-motion-hint">Hover</span>
-        </div>
-        <div class="project-text">
-          <h3>Universo Maloka</h3>
-          <p>In this gamified map app for the interactive science and technology museum Maloka, I collaborated with UI Art and Prototypes to help families find the exhibits quicker.</p>
-          <div class="tags">
-            <span class="tag tag-role">Team Project</span>
+      <a class="p-row" href="projects/maloka.html">
+        <span class="p-head">
+          <span class="p-index" aria-hidden="true"></span>
+          <span class="p-title">Universo Maloka</span>
+          <span class="p-kind">Team Project</span>
+          <span class="p-arrow" aria-hidden="true">&#8594;</span>
+        </span>
+        <span class="p-body">
+          <span class="p-text">
+            <span class="p-copy">In this gamified map app for the interactive science and technology museum Maloka, I collaborated with UI Art and Prototypes to help families find the exhibits quicker.</span>
+            <span class="tags">
             <span class="tag tag-tool">Figma</span>
             <span class="tag tag-tool">Paper prototyping</span>
+            </span>
+          </span>
+          <div class="p-media">
+            <img src="assets/thumbs/maloka.jpg" alt="Universo Maloka app screens" loading="lazy" decoding="async">
+            <video class="thumb-motion" muted loop playsinline preload="none"
+                   poster="assets/thumbs/maloka.jpg" aria-hidden="true">
+              <source src="assets/thumbs/maloka.webm" type="video/webm">
+              <source src="assets/thumbs/maloka.mp4" type="video/mp4">
+            </video>
           </div>
-        </div>
+        </span>
       </a>
 
-      <!-- Neuronautas: no thumbnail supplied yet. Swap the placeholder for the
-           img + video block once there is material. -->
-      <a class="project-card" href="projects/neuronautas.html">
-        <div class="project-thumb">
-          <div class="thumb-empty">[ neuronautas — poster pending ]</div>
-        </div>
-        <div class="project-text">
-          <h3>Neuronautas</h3>
-          <p>To promote appreciation for the neurodivergence spectrum, I cooperated with Paper Prototyping and UI Implementation to create this interactive arduino experience.</p>
-          <div class="tags">
-            <span class="tag tag-role">Team Project</span>
+      <a class="p-row" href="projects/neuronautas.html">
+        <span class="p-head">
+          <span class="p-index" aria-hidden="true"></span>
+          <span class="p-title">Neuronautas</span>
+          <span class="p-kind">Team Project</span>
+          <span class="p-arrow" aria-hidden="true">&#8594;</span>
+        </span>
+        <span class="p-body">
+          <span class="p-text">
+            <span class="p-copy">To promote appreciation for the neurodivergence spectrum, I cooperated with Paper Prototyping and UI Implementation to create this interactive arduino experience.</span>
+            <span class="tags">
             <span class="tag tag-tool">Figma</span>
             <span class="tag tag-tool">Unity</span>
+            </span>
+          </span>
+          <div class="p-media">
+            <div class="thumb-empty">[ poster pending ]</div>
           </div>
-        </div>
+        </span>
       </a>
-
     </div>
 
     <!-- ---------- GAME UI ---------- -->
-    <div class="project-list" id="panel-games" role="tabpanel" aria-labelledby="tab-games" hidden>
-
-      <a class="project-card" href="projects/guitar-hero-iii.html">
-        <div class="project-thumb">
-          <img src="assets/thumbs/guitar-hero-iii.jpg" alt="Redesigned Guitar Hero III main menu" loading="lazy" decoding="async">
-          <video class="thumb-motion" muted loop playsinline preload="none"
-                 poster="assets/thumbs/guitar-hero-iii.jpg" aria-hidden="true">
-            <source src="assets/thumbs/guitar-hero-iii.webm" type="video/webm">
-            <source src="assets/thumbs/guitar-hero-iii.mp4" type="video/mp4">
-          </video>
-          <span class="thumb-motion-hint">Hover</span>
-        </div>
-        <div class="project-text">
-          <h3>Guitar Hero III — UI Redesign</h3>
-          <p>For this project, I took on a challenge to improve the navigation and usability on the HUD, Pause and Main Menu screens while modernizing the iconic original style.</p>
-          <div class="tags">
-            <span class="tag tag-role">Case Study</span>
+    <div class="p-index-list" id="panel-games" role="tabpanel" aria-labelledby="tab-games" hidden>
+      <a class="p-row" href="projects/guitar-hero-iii.html">
+        <span class="p-head">
+          <span class="p-index" aria-hidden="true"></span>
+          <span class="p-title">Guitar Hero III — UI Redesign</span>
+          <span class="p-kind">Case Study</span>
+          <span class="p-arrow" aria-hidden="true">&#8594;</span>
+        </span>
+        <span class="p-body">
+          <span class="p-text">
+            <span class="p-copy">For this project, I took on a challenge to improve the navigation and usability on the HUD, Pause and Main Menu screens while modernizing the iconic original style.</span>
+            <span class="tags">
             <span class="tag tag-tool">Figma</span>
             <span class="tag tag-tool">GenAI Placeholders</span>
+            </span>
+          </span>
+          <div class="p-media">
+            <img src="assets/thumbs/guitar-hero-iii.jpg" alt="Redesigned Guitar Hero III main menu" loading="lazy" decoding="async">
+            <video class="thumb-motion" muted loop playsinline preload="none"
+                   poster="assets/thumbs/guitar-hero-iii.jpg" aria-hidden="true">
+              <source src="assets/thumbs/guitar-hero-iii.webm" type="video/webm">
+              <source src="assets/thumbs/guitar-hero-iii.mp4" type="video/mp4">
+            </video>
           </div>
-        </div>
+        </span>
       </a>
 
-      <a class="project-card" href="projects/kungata.html">
-        <div class="project-thumb">
-          <img src="assets/thumbs/kungata.jpg" alt="Kungatá title sequence" loading="lazy" decoding="async">
-          <video class="thumb-motion" muted loop playsinline preload="none"
-                 poster="assets/thumbs/kungata.jpg" aria-hidden="true">
-            <source src="assets/thumbs/kungata.webm" type="video/webm">
-            <source src="assets/thumbs/kungata.mp4" type="video/mp4">
-          </video>
-          <span class="thumb-motion-hint">Hover</span>
-        </div>
-        <div class="project-text">
-          <h3>Kungatá</h3>
-          <p>In this action-based roguelike I designed game mechanics, implemented menus &amp; dynamic UI, and developed Enemy AI, dialogue systems and object interaction in Unity.</p>
-          <div class="tags">
-            <span class="tag tag-role">Team Project</span>
+      <a class="p-row" href="projects/kungata.html">
+        <span class="p-head">
+          <span class="p-index" aria-hidden="true"></span>
+          <span class="p-title">Kungatá</span>
+          <span class="p-kind">Team Project</span>
+          <span class="p-arrow" aria-hidden="true">&#8594;</span>
+        </span>
+        <span class="p-body">
+          <span class="p-text">
+            <span class="p-copy">In this action-based roguelike I designed game mechanics, implemented menus &amp; dynamic UI, and developed Enemy AI, dialogue systems and object interaction in Unity.</span>
+            <span class="tags">
             <span class="tag tag-tool">Paper prototyping</span>
             <span class="tag tag-tool">Unity</span>
             <span class="tag tag-tool">C#</span>
+            </span>
+          </span>
+          <div class="p-media">
+            <img src="assets/thumbs/kungata.jpg" alt="Kungatá title sequence" loading="lazy" decoding="async">
+            <video class="thumb-motion" muted loop playsinline preload="none"
+                   poster="assets/thumbs/kungata.jpg" aria-hidden="true">
+              <source src="assets/thumbs/kungata.webm" type="video/webm">
+              <source src="assets/thumbs/kungata.mp4" type="video/mp4">
+            </video>
           </div>
-        </div>
+        </span>
       </a>
-
     </div>
   </div>
 </section>
@@ -262,7 +292,7 @@
 
         <div class="btn-row" style="margin-top:var(--s-3);">
           <!-- Point this at assets/alejandra-uruena-resume.pdf once the file is in. -->
-          <a class="btn" href="#" download>Download Resume</a>
+          <a class="btn" href="#" download>Download resume</a>
         </div>
 
         <h3>Latest focus</h3>
@@ -320,13 +350,32 @@
 <!-- ============ CONTACT ============ -->
 <section id="contact">
   <div class="wrap">
-    <p class="section-label">Contact</p>
-    <h2 class="section-title">See anything you like?</h2>
-    <p class="section-intro">Let's have a chat!</p>
-    <div class="contact-links">
-      <a class="btn btn-primary" href="mailto:uruenale@gmail.com">Email me</a>
-      <a class="btn" href="https://www.linkedin.com/in/aleja-uruena/" target="_blank" rel="noopener">LinkedIn</a>
-      <a class="btn" href="https://github.com/alejandra-uruena" target="_blank" rel="noopener">GitHub</a>
+    <div class="contact-body">
+      <h2 class="section-title">See anything you like?</h2>
+      <p class="contact-line">Let's have a chat!</p>
+
+      <!-- Icon-only links carry an aria-label for screen readers and a title
+           for the pointer tooltip: a pictogram on its own names nothing. -->
+      <ul class="social">
+        <li>
+          <a class="icon-link" href="https://www.linkedin.com/in/aleja-uruena/"
+             target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">
+            <i class="i-linkedin" aria-hidden="true"></i>
+          </a>
+        </li>
+        <li>
+          <a class="icon-link" href="mailto:uruenale@gmail.com"
+             aria-label="Email" title="uruenale@gmail.com">
+            <i class="i-mail" aria-hidden="true"></i>
+          </a>
+        </li>
+        <li>
+          <a class="icon-link" href="https://github.com/AlejaUruena"
+             target="_blank" rel="noopener" aria-label="GitHub" title="GitHub">
+            <i class="i-github" aria-hidden="true"></i>
+          </a>
+        </li>
+      </ul>
     </div>
   </div>
 </section>
@@ -335,8 +384,12 @@
 
 <footer>
   <div class="wrap">
-    <span>© <span id="year">2026</span> Alejandra Urueña</span>
-    <span>Designed and built by hand</span>
+    <ul class="social social-sm">
+      <li><a class="icon-link" href="https://www.linkedin.com/in/aleja-uruena/" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><i class="i-linkedin" aria-hidden="true"></i></a></li>
+      <li><a class="icon-link" href="mailto:uruenale@gmail.com" aria-label="Email" title="uruenale@gmail.com"><i class="i-mail" aria-hidden="true"></i></a></li>
+      <li><a class="icon-link" href="https://github.com/AlejaUruena" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub"><i class="i-github" aria-hidden="true"></i></a></li>
+    </ul>
+    <span class="copyright">© <span id="year">2026</span> Alejandra Urueña</span>
   </div>
 </footer>
 

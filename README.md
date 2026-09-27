@@ -3,7 +3,7 @@
 UI/UX Designer with a technical background in games QA. This repository holds the source of
 my portfolio site: interface systems for games and digital products.
 
-**Live site:** https://alejandra-uruena.github.io/portfolio/
+**Live site:** https://alejauruena.github.io/portfolio/
 
 ---
 

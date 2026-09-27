@@ -151,7 +151,7 @@ git branch -M main
 Crea un repositorio **público** vacío en GitHub (sin README, sin .gitignore) y conéctalo:
 
 ```bash
-git remote add origin https://github.com/alejandra-uruena/portfolio.git
+git remote add origin https://github.com/AlejaUruena/portfolio.git
 git push -u origin main
 ```
 
@@ -160,9 +160,9 @@ Luego, en el repositorio: **Settings → Pages**
 - *Branch*: `main`, carpeta `/ (root)`
 - **Save**
 
-La URL queda en `https://alejandra-uruena.github.io/portfolio/` y tarda 1–2 minutos en aparecer la primera vez.
+La URL queda en `https://alejauruena.github.io/portfolio/` y tarda 1–2 minutos en aparecer la primera vez.
 
-**Truco:** si nombras el repositorio `alejandra-uruena.github.io`, la URL es `https://alejandra-uruena.github.io/` — más limpia para un CV. Solo puedes tener uno así por cuenta.
+**Truco:** si nombras el repositorio `AlejaUruena.github.io`, la URL es `https://alejauruena.github.io/` — más limpia para un CV. Solo puedes tener uno así por cuenta.
 
 ### Actualizaciones posteriores
 
