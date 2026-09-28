@@ -234,18 +234,24 @@
 
 /* ---------------------------------------------------------------------------
    Nav height -> --nav-h
-   The hero is sized to the screen minus the sticky nav. The nav's height
+   Two things need it: the hero, sized to the screen minus the sticky nav,
+   and every anchor target, which must stop below the nav rather than behind
+   it. The nav's height
    changes with the breakpoint, the font, and whether the role line shows,
    so it is measured rather than guessed, and re-measured on resize and
    once webfonts land (a fallback font can change the brand's height).
 --------------------------------------------------------------------------- */
 (function () {
+  /* Not gated on .hero: the about and case-study pages have no hero but
+     still need the value for their anchors' scroll-margin-top. */
   var nav = document.querySelector('.nav');
-  var hero = document.querySelector('.hero');
-  if (!nav || !hero) return;
+  if (!nav) return;
 
   function sync() {
-    hero.style.setProperty('--nav-h', Math.round(nav.getBoundingClientRect().height) + 'px');
+    /* On the root element, not the hero: the section anchors need it too,
+       for their scroll-margin-top. */
+    document.documentElement.style.setProperty(
+      '--nav-h', Math.round(nav.getBoundingClientRect().height) + 'px');
   }
   sync();
 

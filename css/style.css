@@ -71,6 +71,13 @@
 [hidden] { display: none !important; }
 
 html { scroll-behavior: smooth; background: var(--bg-deep); }
+
+/* The nav is sticky, so an anchor lands with the section's first line
+   underneath it. scroll-margin-top reserves exactly the nav's height plus a
+   little air, so the heading stops just below it instead of behind it.
+   --nav-h is measured by js/main.js; this is the pre-script fallback. */
+:root { --nav-h: 72px; }
+section[id], header[id], main[id] { scroll-margin-top: calc(var(--nav-h) + 0.75rem); }
 body {
   margin: 0;
   color: var(--text);
@@ -132,7 +139,9 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
   line-height: 1.2;
 }
 .nav-name { font-size: 0.8rem; }
-.nav-role { font-size: 0.55rem; color: var(--text-faint); letter-spacing: 0.12em; }
+/* Aleo, not the label face: it reads as a line of prose under the name
+   rather than a second piece of signage. */
+.nav-role { font-family: var(--font-body); font-size: 0.6rem; color: var(--text-faint); letter-spacing: 0.06em; text-transform: none; }
 .nav-brand:hover { text-decoration: none; color: var(--accent); }
 .nav-right { display: flex; align-items: center; gap: var(--s-3); }
 .nav-links { display: flex; gap: var(--s-3); list-style: none; margin: 0; padding: 0; }
@@ -240,7 +249,6 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
    come off, or the page is one nav taller than the screen. --nav-h is kept
    in sync by js/main.js; the value here is the pre-script fallback. */
 .hero {
-  --nav-h: 72px;
   min-height: calc(100vh - var(--nav-h));
   min-height: calc(100svh - var(--nav-h));
   display: flex; align-items: center;
@@ -292,9 +300,12 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
   border: 1px solid var(--purple); border-radius: var(--radius-pill);
   background: var(--panel);
   font-family: var(--font-body); font-size: 0.82rem; color: var(--text-dim);
-  transition: color 0.15s, border-color 0.15s;
 }
-.tool:hover { color: var(--text); border-color: var(--accent-70); }
+/* No hover, no transition: these are labels, not controls. Anything that
+   lights up under the pointer reads as clickable, and none of them are.
+   `cursor` is deliberately left alone — the page hides the native cursor for
+   the custom one, and setting it here would make the system arrow reappear
+   over every chip. */
 .tool i {
   width: 18px; height: 18px; flex: none;
   background-color: currentColor;            /* ← the one line that recolours icons */
@@ -501,8 +512,8 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
    clipped by the nav's scroll container. The role line is repeated in the
    hero two scrolls down, so it is the part that can go. */
 @media (max-width: 420px) {
-  .nav-role { display: none; }
   .nav-name { font-size: 0.72rem; }
+  .nav-role { font-size: 0.55rem; }
   .nav-inner { padding-left: 0.75rem; padding-right: 0.75rem; gap: 0.6rem; }
   .nav-links { gap: 0.6rem; }
   .nav-links a { font-size: 0.66rem; letter-spacing: 0.05em; }
