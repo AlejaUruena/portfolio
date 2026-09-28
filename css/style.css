@@ -845,13 +845,14 @@ input, textarea, [contenteditable="true"] { cursor: text; }
   }
   .swipe-hint:not(.is-away) { visibility: visible; transition: opacity 0.35s ease, visibility 0s; }
   .swipe-hint:hover, .swipe-hint:focus-visible { text-decoration: none; color: var(--accent); }
-  .swipe-hint svg { width: 20px; height: 20px; animation: swipe-nudge 2.4s ease-in-out infinite; }
+  .swipe-hint svg { width: 20px; height: 20px; animation: swipe-nudge-out-right 2.4s ease-in-out infinite; }
 
-  /* Each one hugs its own edge and nudges the way the finger should travel:
-     the right arrow pulls left for "next", the left one pushes right. */
+  /* Each one hugs its own edge and nudges outward, away from the screen —
+     the direction the content is being pulled toward, and the same way the
+     chevron itself points. */
   .swipe-hint--next { right: 2px; }
   .swipe-hint--prev { left: 2px; }
-  .swipe-hint--prev svg { animation-name: swipe-nudge-back; }
+  .swipe-hint--prev svg { animation-name: swipe-nudge-out-left; }
 
   /* Once the Next-project buttons are on screen the hint is repeating
      something already visible, so it steps out of the way. */
@@ -861,14 +862,14 @@ input, textarea, [contenteditable="true"] { cursor: text; }
   .swipe-hint.is-away { opacity: 0; pointer-events: none; visibility: hidden; }
 }
 
-@keyframes swipe-nudge {
-  0%, 60%, 100% { transform: translateX(0); }
-  75%           { transform: translateX(-4px); }
-  88%           { transform: translateX(0); }
-}
-@keyframes swipe-nudge-back {
+@keyframes swipe-nudge-out-right {
   0%, 60%, 100% { transform: translateX(0); }
   75%           { transform: translateX(4px); }
+  88%           { transform: translateX(0); }
+}
+@keyframes swipe-nudge-out-left {
+  0%, 60%, 100% { transform: translateX(0); }
+  75%           { transform: translateX(-4px); }
   88%           { transform: translateX(0); }
 }
 @media (prefers-reduced-motion: reduce) {
