@@ -400,3 +400,68 @@
       .catch(function () { flash('Press Ctrl+C'); });
   });
 })();
+
+
+/* ---------------------------------------------------------------------------
+   Swipe between case studies (mobile only)
+   Swipe left for the next project, right for the previous one, plus a sticky
+   arrow on the right edge so the gesture is discoverable — an invisible
+   gesture is one most people never find. Both are enhancements: the
+   "Next project" buttons at the end of each page stay the reliable path,
+   which is what keyboards and screen readers use.
+--------------------------------------------------------------------------- */
+(function () {
+  var main = document.querySelector('main[data-next]');
+  if (!main) return;
+  if (!window.matchMedia('(max-width: 760px)').matches) return;
+
+  var next = { href: main.dataset.next, title: main.dataset.nextTitle };
+  var prev = { href: main.dataset.prev, title: main.dataset.prevTitle };
+
+  /* ---- the hint ---- */
+  var hint = document.createElement('a');
+  hint.className = 'swipe-hint';
+  hint.href = next.href;
+  hint.setAttribute('aria-label', 'Next project: ' + next.title);
+  hint.title = 'Next project: ' + next.title;
+  hint.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+                   'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+                   '<path d="M9 18l6-6-6-6"/></svg>';
+  document.body.appendChild(hint);
+
+  var caseNav = document.querySelector('.case-nav');
+  if (caseNav && 'IntersectionObserver' in window) {
+    new IntersectionObserver(function (e) {
+      hint.classList.toggle('is-away', e[0].isIntersecting);
+    }, { threshold: 0.2 }).observe(caseNav);
+  }
+
+  /* ---- the gesture ---- */
+  var x0 = 0, y0 = 0, t0 = 0, tracking = false;
+  var MIN = 70;        // px of travel before it counts as a swipe
+  var RATIO = 1.6;     // horizontal must clearly beat vertical, or it is a scroll
+  var MAX_MS = 700;    // a slow drag is not a flick
+  var EDGE = 32;       // iOS reads an edge swipe as "go back" — stay out of that lane
+
+  document.addEventListener('touchstart', function (e) {
+    if (e.touches.length !== 1) { tracking = false; return; }   // pinch-zoom
+    var t = e.touches[0];
+    if (t.clientX < EDGE || t.clientX > window.innerWidth - EDGE) { tracking = false; return; }
+    // Don't hijack a touch that started on something interactive.
+    if (e.target.closest('a, button, input, textarea, select, summary, video')) { tracking = false; return; }
+    x0 = t.clientX; y0 = t.clientY; t0 = Date.now(); tracking = true;
+  }, { passive: true });
+
+  document.addEventListener('touchend', function (e) {
+    if (!tracking) return;
+    tracking = false;
+    var t = e.changedTouches[0];
+    var dx = t.clientX - x0, dy = t.clientY - y0;
+    if (Date.now() - t0 > MAX_MS) return;
+    if (Math.abs(dx) < MIN) return;
+    if (Math.abs(dx) < Math.abs(dy) * RATIO) return;            // that was a scroll
+
+    var target = dx < 0 ? next : prev;                          // left = forward
+    if (target && target.href) location.href = target.href;
+  }, { passive: true });
+})();
