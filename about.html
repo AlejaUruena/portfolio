@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- TEMPORARY: keeps search engines out while the case studies are still being written.
+     DELETE this line once the project pages are done. -->
+<meta name="robots" content="noindex">
+
+<!-- The h1 is a greeting, so the descriptive line lives here, where search
+     results and link previews read it. -->
+<title>About — Alejandra Urueña</title>
+<meta name="description" content="Interaction designer in Bogotá, Colombia. Background in game development, web building and QA testing, now designing interfaces.">
+
+<meta property="og:title" content="About — Alejandra Urueña">
+<meta property="og:description" content="Interaction designer in Bogotá, Colombia.">
+<meta property="og:type" content="website">
+<!-- <meta property="og:image" content="https://alejauruena.github.io/portfolio/assets/og-image.png"> -->
+
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/png" href="assets/cursor/icon-180.png" sizes="180x180">
+<link rel="apple-touch-icon" href="assets/cursor/apple-touch-icon.png">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html">
+      <span class="nav-name">Alejandra&nbsp;Urueña</span>
+      <span class="nav-role">Technical UX/UI Designer</span>
+    </a>
+    <div class="nav-right">
+      <!-- Present in the markup but hidden: js/main.js unhides it and only
+           then switches the list into a panel. Without JS the three links
+           stay visible, so the nav can never end up unreachable. -->
+      <button class="nav-toggle" type="button" hidden
+              aria-expanded="false" aria-controls="nav-menu" aria-label="Open menu">
+        <span class="nav-toggle-bars" aria-hidden="true"></span>
+      </button>
+      <ul class="nav-links" id="nav-menu">
+        <li><a href="index.html#work">Work</a></li>
+        <li><a href="about.html" aria-current="page">About</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+        <!-- ART goes here once the section exists. A menu item that leads
+             nowhere is worse than no menu item. -->
+      </ul>
+      <!-- Language switch. Unhide once /es/ exists; the ES entry becomes a link. -->
+      <div class="lang-switch" hidden>
+        <span aria-current="true">EN</span>
+        <a href="es/about.html" hreflang="es">ES</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main id="main" class="page-about">
+<section>
+  <div class="wrap">
+    <h2 class="section-title">About me</h2>
+
+    <div class="two-col">
+      <div class="prose">
+        <p>
+          I'm based in Bogotá, Colombia, where I earned my Bachelor's degree in
+          Interaction Design.
+        </p>
+        <p>
+          I've worked professionally in game development, web building, and QA testing,
+          which sharpened how I read user and player psychology. Now, I bring that same
+          criteria and design thinking to how I design interfaces, prioritizing
+          functionality while maintaining a strong visual identity.
+        </p>
+
+        <div class="btn-row" style="margin-top:var(--s-3);">
+          <!-- Point this at assets/alejandra-uruena-resume.pdf once the file is in. -->
+          <a class="btn" href="#" download>Download resume</a>
+        </div>
+
+        <h3>Latest focus</h3>
+        <p>
+          I have an open mindset towards AI integration and am currently exploring best
+          practices for using it in implementation workflows for pipeline automation.
+        </p>
+
+        <!-- A native disclosure: keyboard-operable and works with JS disabled. -->
+        <details class="fun-facts">
+          <summary>Click to read some fun facts!</summary>
+          <p>
+            Outside of work, I love spending my time playing the drums, gaming,
+            overanalyzing movies, and making art &amp; DIY projects.
+          </p>
+          <p>You'll usually find me in game jams!</p>
+          <p>I'm really into video editing and fanart…</p>
+        </details>
+      </div>
+
+      <div class="skills">
+        <h3>Design skills</h3>
+        <ul class="chip-list">
+          <li>User flows</li>
+          <li>Information Architecture</li>
+          <li>Wireframing</li>
+          <li>Prototyping</li>
+          <li>UI Design Systems</li>
+          <li>UX Writing</li>
+          <li>Illustration</li>
+        </ul>
+
+        <h3>Technical range</h3>
+        <ul class="chip-list">
+          <li>Figma</li>
+          <li>Photoshop</li>
+          <li>Illustrator</li>
+          <li>Premiere Pro</li>
+          <li>Clip Studio</li>
+          <li>Blender</li>
+          <li>Jira / Trello</li>
+        </ul>
+        <ul class="chip-list">
+          <li>Unity</li>
+          <li>Unreal Engine</li>
+          <li>HTML/CSS</li>
+          <li>Webflow</li>
+          <li>WixStudio</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <ul class="social social-sm">
+      <li><a class="icon-link" href="https://www.linkedin.com/in/aleja-uruena/" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><i class="i-linkedin" aria-hidden="true"></i></a></li>
+      <li><a class="icon-link js-copy-mail" href="mailto:uruenale@gmail.com" data-copy="uruenale@gmail.com" aria-label="Email — click to copy the address" title="uruenale@gmail.com"><i class="i-mail" aria-hidden="true"></i><span class="copy-toast" role="status" aria-live="polite"></span></a></li>
+      <li><a class="icon-link" href="https://github.com/AlejaUruena" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub"><i class="i-github" aria-hidden="true"></i></a></li>
+    </ul>
+    <span class="copyright">© <span id="year">2026</span> Alejandra Urueña</span>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

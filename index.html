@@ -42,7 +42,7 @@
       </button>
       <ul class="nav-links" id="nav-menu">
         <li><a href="#work">Work</a></li>
-        <li><a href="#about">About</a></li>
+        <li><a href="about.html">About</a></li>
         <li><a href="#contact">Contact</a></li>
         <!-- ART goes here once the section exists. A menu item that leads
              nowhere is worse than no menu item. -->
@@ -280,79 +280,6 @@
 </section>
 
 <!-- ============ ABOUT ============ -->
-<section id="about">
-  <div class="wrap">
-    <h2 class="section-title">About me</h2>
-
-    <div class="two-col">
-      <div class="prose">
-        <p>
-          I'm based in Bogotá, Colombia, where I earned my Bachelor's degree in
-          Interaction Design.
-        </p>
-        <p>
-          I've worked professionally in game development, web building, and QA testing,
-          which sharpened how I read user and player psychology. Now, I bring that same
-          criteria and design thinking to how I design interfaces, prioritizing
-          functionality while maintaining a strong visual identity.
-        </p>
-
-        <div class="btn-row" style="margin-top:var(--s-3);">
-          <!-- Point this at assets/alejandra-uruena-resume.pdf once the file is in. -->
-          <a class="btn" href="#" download>Download resume</a>
-        </div>
-
-        <h3>Latest focus</h3>
-        <p>
-          I have an open mindset towards AI integration and am currently exploring best
-          practices for using it in implementation workflows for pipeline automation.
-        </p>
-
-        <!-- A native disclosure: keyboard-operable and works with JS disabled. -->
-        <details class="fun-facts">
-          <summary>Click to read some fun facts!</summary>
-          <p>
-            Outside of work, I love spending my time playing the drums, gaming,
-            overanalyzing movies, and making art &amp; DIY projects.
-          </p>
-          <p>You'll usually find me in game jams!</p>
-          <p>I'm really into video editing and fanart…</p>
-        </details>
-      </div>
-
-      <div class="skills">
-        <h3>Design skills</h3>
-        <ul class="chip-list">
-          <li>User flows</li>
-          <li>Information Architecture</li>
-          <li>Wireframing</li>
-          <li>Prototyping</li>
-          <li>UI Design Systems</li>
-          <li>UX Writing</li>
-          <li>Illustration</li>
-        </ul>
-
-        <h3>Technical range</h3>
-        <ul class="chip-list">
-          <li>Figma</li>
-          <li>Photoshop</li>
-          <li>Illustrator</li>
-          <li>Premiere Pro</li>
-          <li>Clip Studio</li>
-          <li>Blender</li>
-          <li>Jira / Trello</li>
-        </ul>
-        <ul class="chip-list">
-          <li>Unity</li>
-          <li>Unreal Engine</li>
-          <li>HTML/CSS</li>
-          <li>Webflow</li>
-          <li>WixStudio</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- ============ CONTACT ============ -->
 <section id="contact">
@@ -361,28 +288,43 @@
       <h2 class="section-title">See anything you like?</h2>
       <p class="contact-line">Let's have a chat!</p>
 
-      <!-- Icon-only links carry an aria-label for screen readers and a title
-           for the pointer tooltip: a pictogram on its own names nothing. -->
-      <ul class="social">
-        <li>
-          <a class="icon-link" href="https://www.linkedin.com/in/aleja-uruena/"
-             target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">
-            <i class="i-linkedin" aria-hidden="true"></i>
-          </a>
-        </li>
-        <li>
-          <a class="icon-link" href="mailto:uruenale@gmail.com"
-             aria-label="Email" title="uruenale@gmail.com">
-            <i class="i-mail" aria-hidden="true"></i>
-          </a>
-        </li>
-        <li>
-          <a class="icon-link" href="https://github.com/AlejaUruena"
-             target="_blank" rel="noopener" aria-label="GitHub" title="GitHub">
-            <i class="i-github" aria-hidden="true"></i>
-          </a>
-        </li>
-      </ul>
+      <!-- A static site cannot receive a POST on its own, so the submission
+           goes to Web3Forms. The endpoint below is the same for everyone;
+           what identifies this form is the access_key on the next line.
+           PASTE YOUR ACCESS KEY IN THE value="" BELOW — that is the only
+           edit needed to turn the form on. The key is public by design:
+           it can only send mail to the address it was registered with.
+
+           Without JS this posts natively and Web3Forms shows its own
+           confirmation; with JS it posts in the background and answers
+           in place, which keeps people on the page. -->
+      <form class="contact-form" action="https://api.web3forms.com/submit" method="POST" novalidate>
+        <input type="hidden" name="access_key" value="113a87e3-f549-46a8-bc3e-b3dce1095770">
+        <input type="hidden" name="subject" value="New message from your portfolio">
+        <input type="hidden" name="from_name" value="Portfolio contact form">
+
+        <div class="field">
+          <label for="cf-name">Name</label>
+          <input id="cf-name" name="name" type="text" autocomplete="name" required>
+        </div>
+        <div class="field">
+          <label for="cf-email">Email</label>
+          <input id="cf-email" name="email" type="email" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="cf-msg">Message</label>
+          <textarea id="cf-msg" name="message" rows="4" required></textarea>
+        </div>
+
+        <!-- Web3Forms' spam trap. It rejects any submission where `botcheck`
+             is ticked; bots tick every checkbox they find. Their API requires
+             this exact name and display:none. tabindex and aria-hidden keep
+             it away from keyboards and screen readers. -->
+        <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" aria-hidden="true">
+
+        <button class="btn" type="submit">Send message</button>
+        <p class="form-status" role="status" aria-live="polite"></p>
+      </form>
     </div>
   </div>
 </section>
@@ -393,7 +335,7 @@
   <div class="wrap">
     <ul class="social social-sm">
       <li><a class="icon-link" href="https://www.linkedin.com/in/aleja-uruena/" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><i class="i-linkedin" aria-hidden="true"></i></a></li>
-      <li><a class="icon-link" href="mailto:uruenale@gmail.com" aria-label="Email" title="uruenale@gmail.com"><i class="i-mail" aria-hidden="true"></i></a></li>
+      <li><a class="icon-link js-copy-mail" href="mailto:uruenale@gmail.com" data-copy="uruenale@gmail.com" aria-label="Email — click to copy the address" title="uruenale@gmail.com"><i class="i-mail" aria-hidden="true"></i><span class="copy-toast" role="status" aria-live="polite"></span></a></li>
       <li><a class="icon-link" href="https://github.com/AlejaUruena" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub"><i class="i-github" aria-hidden="true"></i></a></li>
     </ul>
     <span class="copyright">© <span id="year">2026</span> Alejandra Urueña</span>

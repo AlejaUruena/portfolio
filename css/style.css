@@ -607,6 +607,13 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
 footer { border-top: 1px solid var(--purple-soft); padding: var(--s-4) 0; color: var(--text-faint); font-size: 0.82rem; }
 footer .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-2); }
 .copyright { font-family: var(--font-body); font-size: 0.8rem; letter-spacing: 0.06em; }
+/* On the landing the contact section sits right above the footer with the
+   same three icons, so the footer repeats them; there they are removed and
+   the copyright is the only child. `space-between` would then park it on the
+   left, so it is pushed back to the right. Keyed off :only-child rather than
+   a new class: the rule follows the markup instead of needing to be kept in
+   sync with it. */
+footer .wrap > .copyright:only-child { margin-left: auto; }
 
 /* ---------- Responsive: card stacks, text first ---------- */
 @media (max-width: 720px) {
@@ -680,3 +687,60 @@ input, textarea, [contenteditable="true"] { cursor: text; }
   .cursor-star { display: none; }
   .cursor-custom, .cursor-custom a, .cursor-custom button, .cursor-custom summary { cursor: url('../assets/cursor/star-sm.png') 11 11, auto; }
 }
+
+/* ---------- Contact form ----------
+   Labels are real <label> elements, never placeholders standing in for them:
+   a placeholder disappears the moment you type, so the field loses its name
+   exactly when you are checking what you wrote. */
+.contact-form { margin-top: var(--s-3); text-align: left; }
+.field { margin-bottom: var(--s-2); }
+.field label {
+  display: block; margin-bottom: 0.35rem;
+  font-family: var(--font-label); font-size: 0.62rem;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint);
+}
+.field input, .field textarea {
+  width: 100%; box-sizing: border-box;
+  background: var(--panel); color: var(--text);
+  border: 1px solid var(--purple); border-radius: var(--radius-sm);
+  padding: 0.7rem 0.8rem;
+  font-family: var(--font-body); font-size: 0.95rem;
+  /* 16px or larger on the input itself stops iOS Safari zooming in on focus. */
+  transition: border-color 0.18s, background 0.18s;
+}
+.field textarea { resize: vertical; min-height: 6rem; }
+.field input:focus, .field textarea:focus {
+  outline: none; border-color: var(--accent); background: var(--panel-2);
+}
+.field input:user-invalid, .field textarea:user-invalid { border-color: #E8795A; }
+.contact-form .btn { margin-top: var(--s-1); }
+
+/* The honeypot: off-screen rather than display:none, which bots skip. */
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+.form-status {
+  margin-top: var(--s-2); min-height: 1.2em;
+  font-family: var(--font-body); font-size: 0.85rem; color: var(--text-dim);
+}
+.form-status.is-ok { color: var(--accent); }
+.form-status.is-err { color: #F0A58C; }
+
+/* ---------- Copy-to-clipboard bubble ----------
+   Sits on the mail icon in the footer. `role="status"` on the bubble means a
+   screen reader announces the confirmation too, not just sighted users. */
+.icon-link { position: relative; }
+.copy-toast {
+  position: absolute; bottom: calc(100% + 8px); left: 50%;
+  transform: translate(-50%, 4px);
+  padding: 0.25rem 0.5rem; border-radius: var(--radius-sm);
+  background: var(--accent); color: var(--ink);
+  font-family: var(--font-label); font-size: 0.55rem; letter-spacing: 0.08em;
+  white-space: nowrap; pointer-events: none;
+  opacity: 0; transition: opacity 0.18s, transform 0.18s;
+}
+.copy-toast::after {
+  content: ''; position: absolute; top: 100%; left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent; border-top-color: var(--accent);
+}
+.icon-link.is-copied .copy-toast { opacity: 1; transform: translate(-50%, 0); }

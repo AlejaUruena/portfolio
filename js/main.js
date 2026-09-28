@@ -303,3 +303,100 @@
   // Crossing into desktop must not leave the panel in a half state.
   mobile.addEventListener('change', function (m) { if (!m.matches) close(false); });
 })();
+
+
+/* ---------------------------------------------------------------------------
+   Contact form (Web3Forms)
+   GitHub Pages serves files; it cannot run anything, so the submission goes
+   to Web3Forms. There is nothing to configure here — the endpoint lives in
+   the form's action and the account is identified by the access_key hidden
+   field in index.html. This layer only stops the page from navigating away
+   and reports the outcome in place.
+--------------------------------------------------------------------------- */
+(function () {
+  var form = document.querySelector('.contact-form');
+  if (!form) return;
+  var status = form.querySelector('.form-status');
+  var button = form.querySelector('button[type="submit"]');
+  var key = form.querySelector('[name="access_key"]');
+
+  function say(msg, kind) {
+    status.textContent = msg;
+    status.classList.toggle('is-ok', kind === 'ok');
+    status.classList.toggle('is-err', kind === 'err');
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    // No key pasted in yet: say so rather than posting and pretending.
+    if (!key || !key.value.trim()) {
+      say('The form is not connected yet — please use the email icon below.', 'err');
+      return;
+    }
+
+    // `novalidate` silences the browser's own bubbles so the message can live
+    // in the page, but the constraints themselves still apply.
+    if (!form.checkValidity()) {
+      say('Please fill in your name, a valid email and a message.', 'err');
+      form.reportValidity();
+      return;
+    }
+
+    button.disabled = true;
+    say('Sending\u2026');
+
+    fetch(form.getAttribute('action'), {
+      method: 'POST',
+      headers: { Accept: 'application/json' },
+      body: new FormData(form)
+    })
+      .then(function (r) { return r.json().catch(function () { return {}; }); })
+      .then(function (data) {
+        // Web3Forms answers { success: true|false, message }. A 200 alone is
+        // not proof it went through, so the flag is what gets checked.
+        if (!data.success) throw new Error(data.message || 'failed');
+        form.reset();
+        say('Thanks \u2014 your message is on its way.', 'ok');
+      })
+      .catch(function () {
+        say('Something went wrong. You can email me directly instead.', 'err');
+      })
+      .then(function () { button.disabled = false; });
+  });
+})();
+
+
+/* ---------------------------------------------------------------------------
+   Copy the email address from the footer icon
+   The link keeps its mailto: href, so it still works without JS and a
+   middle-click or "open in new tab" behaves as expected. JS only takes over
+   the plain click.
+--------------------------------------------------------------------------- */
+(function () {
+  var link = document.querySelector('.js-copy-mail');
+  if (!link) return;
+  var toast = link.querySelector('.copy-toast');
+  var addr = link.dataset.copy;
+  if (!toast || !addr) return;
+  var timer;
+
+  function flash(msg) {
+    toast.textContent = msg;
+    link.classList.add('is-copied');
+    clearTimeout(timer);
+    timer = setTimeout(function () { link.classList.remove('is-copied'); }, 1600);
+  }
+
+  link.addEventListener('click', function (e) {
+    // Leave modified clicks alone — they mean "open this somewhere else".
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    if (!navigator.clipboard) return;   // no API: fall through to mailto:
+    e.preventDefault();
+    navigator.clipboard.writeText(addr)
+      .then(function () { flash('Copied!'); })
+      // Clipboard writes are refused outside a secure context (file:// or
+      // plain http), so say what happened instead of failing silently.
+      .catch(function () { flash('Press Ctrl+C'); });
+  });
+})();
