@@ -462,6 +462,33 @@
     if (Math.abs(dx) < Math.abs(dy) * RATIO) return;            // that was a scroll
 
     var target = dx < 0 ? next : prev;                          // left = forward
-    if (target && target.href) location.href = target.href;
+    if (!target || !target.href) return;
+
+    /* The direction has to survive the navigation: the page that animates is
+       the NEW document, and it has no idea which way the finger went. A
+       sessionStorage note is the handoff. */
+    try { sessionStorage.setItem('vt-dir', dx < 0 ? 'fwd' : 'back'); } catch (err) {}
+    location.href = target.href;
   }, { passive: true });
 })();
+
+
+
+/* ---------------------------------------------------------------------------
+   Direction of the page transition
+   Reads the note the swipe left in sessionStorage and tags <html> with it, so
+   the CSS can pick the matching pair of animations. `pagereveal` fires on the
+   incoming document before its first frame, which is the only moment early
+   enough to set this. Browsers without cross-document view transitions never
+   fire it and simply navigate as before.
+--------------------------------------------------------------------------- */
+window.addEventListener('pagereveal', function (e) {
+  var dir;
+  try { dir = sessionStorage.getItem('vt-dir'); sessionStorage.removeItem('vt-dir'); } catch (err) {}
+  if (!e.viewTransition || !dir) return;
+
+  document.documentElement.dataset.nav = dir;
+  // Tidy up, or a later tapped link would inherit a direction it never asked for.
+  e.viewTransition.finished.then(clear, clear);
+  function clear() { delete document.documentElement.dataset.nav; }
+});

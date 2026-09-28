@@ -840,14 +840,18 @@ input, textarea, [contenteditable="true"] { cursor: text; }
     background: rgba(25, 16, 28, 0.9);
     backdrop-filter: blur(8px);
     color: var(--accent);
-    transition: opacity 0.25s, translate 0.25s;
+    transition: opacity 0.35s ease, visibility 0s 0.35s;
   }
+  .swipe-hint:not(.is-away) { visibility: visible; transition: opacity 0.35s ease, visibility 0s; }
   .swipe-hint:hover, .swipe-hint:focus-visible { text-decoration: none; color: var(--accent); }
   .swipe-hint svg { width: 16px; height: 16px; animation: swipe-nudge 2.4s ease-in-out infinite; }
 
   /* Once the Next-project buttons are on screen the hint is repeating
      something already visible, so it steps out of the way. */
-  .swipe-hint.is-away { opacity: 0; translate: 100% -50%; pointer-events: none; }
+  /* Fade puro: sale sin moverse, para no competir con la transición de
+     página que ocurre a su lado. La visibilidad se retrasa lo que dura el
+     fade, si no desaparecería de golpe al empezar. */
+  .swipe-hint.is-away { opacity: 0; pointer-events: none; visibility: hidden; }
 }
 
 @keyframes swipe-nudge {
@@ -857,4 +861,41 @@ input, textarea, [contenteditable="true"] { cursor: text; }
 }
 @media (prefers-reduced-motion: reduce) {
   .swipe-hint svg { animation: none; }
+}
+
+
+/* ---------- Transition between case studies ----------
+   Cross-document View Transitions: the browser snapshots the outgoing page,
+   loads the new one, and animates between them. It is the only way to get a
+   real transition between two separate HTML documents without turning the
+   site into a single-page app.
+
+   Scoped to the mobile width, because the swipe it belongs to is mobile-only;
+   a desktop click keeps the instant navigation it has always had. Browsers
+   without the feature ignore the at-rule and navigate as before — nothing to
+   fall back to, because the default IS the old behaviour. */
+@media (max-width: 760px) {
+  @view-transition { navigation: auto; }
+}
+
+/* The direction is written by js/main.js just before it navigates: swipe left
+   sends the old page out to the left and brings the new one in from the
+   right, and the reverse for a swipe right. Without it the browser's own
+   cross-fade applies, which is the right default for a tapped link. */
+::view-transition-old(root),
+::view-transition-new(root) { animation-duration: 0.34s; animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1); }
+
+html[data-nav="fwd"]::view-transition-old(root)  { animation-name: vt-exit-left; }
+html[data-nav="fwd"]::view-transition-new(root)  { animation-name: vt-enter-right; }
+html[data-nav="back"]::view-transition-old(root) { animation-name: vt-exit-right; }
+html[data-nav="back"]::view-transition-new(root) { animation-name: vt-enter-left; }
+
+@keyframes vt-exit-left   { to   { transform: translateX(-22%); opacity: 0; } }
+@keyframes vt-enter-right { from { transform: translateX(22%);  opacity: 0; } }
+@keyframes vt-exit-right  { to   { transform: translateX(22%);  opacity: 0; } }
+@keyframes vt-enter-left  { from { transform: translateX(-22%); opacity: 0; } }
+
+/* Motion off: the transition collapses to a plain cut. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
 }
