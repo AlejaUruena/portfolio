@@ -118,7 +118,9 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
   margin-bottom: var(--s-2);
 }
 .section-title { font-size: clamp(1.7rem, 4vw, 2.4rem); margin-bottom: var(--s-3); }
-.section-intro { color: var(--text-dim); max-width: 62ch; margin-bottom: var(--s-4); }
+/* Work is the one section whose title is followed by a control rather than
+   by prose, so it sits closer. The others keep the wider rhythm. */
+#work .section-title { margin-bottom: var(--s-2); }
 
 /* ---------- Nav ---------- */
 .nav {
