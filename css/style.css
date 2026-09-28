@@ -392,9 +392,12 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
 /* max-height rather than the grid-row trick: it animates in every browser
    shipping today, and a wrong guess here would hide content, not just skip
    an animation. */
+/* .p-media is no longer inside this box: the thumbnail is a sibling so it
+   can start at the very top of the row, level with the title, instead of
+   below it. .p-body now holds the copy alone. */
 .p-body {
   display: grid;
-  grid-template-columns: var(--p-gutter) 1fr minmax(200px, 38%);
+  grid-template-columns: var(--p-gutter) 1fr;
   gap: 0 var(--s-3);
   max-height: 0; overflow: hidden;
   transition: max-height 0.38s cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -404,8 +407,10 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
 .p-text { grid-column: 2; display: block; padding-bottom: var(--s-3); }
 .p-copy { display: block; color: var(--text-dim); font-size: 0.95rem; margin-bottom: var(--s-2); max-width: 52ch; }
 
+/* It animates its own height now that it is not riding inside .p-body.
+   Same curve and duration, so title copy and image still open as one move. */
 .p-media {
-  grid-column: 3; display: block; position: relative;
+  display: block; position: relative;
   aspect-ratio: 16 / 9; margin-bottom: var(--s-3);
   background: var(--panel-2); overflow: hidden;
   border-radius: var(--radius-sm); border: 1px solid var(--purple-soft);
@@ -425,11 +430,71 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
 /* Touch and narrow screens: every row ships open, media above the copy. */
 @media (hover: none), (pointer: coarse), (max-width: 760px) {
   .p-body { grid-template-columns: 1fr; max-height: none; }
-  .p-text, .p-media { grid-column: 1; }
-  .p-media { margin-bottom: var(--s-2); }
+  /* No row grid here: the thumbnail is simply the block after the copy. */
+  .p-row { display: block; }
+  .p-media { max-height: none; overflow: hidden; margin: 0 0 var(--s-2); }
+  /* `.p-row:hover .p-body` outranks the plain `.p-body` above, so on a narrow
+     window with a mouse the row clamped back to 26rem and cut the thumbnail
+     off. Phones never hover, which is why it only showed up on a resized
+     desktop — and why it needs to be unset explicitly here. */
+  .p-row:hover .p-body, .p-row:focus-within .p-body { max-height: none; }
+  .p-text { grid-column: 1; }
   .p-head { grid-template-columns: 2.2rem minmax(0, 1fr) auto; padding-bottom: var(--s-2); }
   .p-arrow { display: none; }
   .p-media video.thumb-motion { display: none; }
+}
+
+/* Desktop layout of a project row.
+   Three changes, all scoped to 761px and up so the phone layout — where the
+   kind label sits under the title and the arrow is already hidden — is
+   untouched:
+     1. The kind label ("Solo Project") is dropped. On a wide screen it was
+        parked against the right edge, holding open a column of dead space
+        between it and the title.
+     2. The arrow moves up beside the title, where it belongs: it points at
+        the thing it opens instead of floating at the far end of the row.
+     3. The thumbnail is centred against the copy rather than top-aligned,
+        so the open row reads as one block instead of two ragged ones.
+   The bottom spacing moves from the two children onto the container: with
+   align-items: center, per-child bottom margins would push each item up by
+   a different amount and undo the centring. */
+@media (min-width: 761px) {
+  .p-head { grid-template-columns: var(--p-gutter) minmax(0, max-content) 1fr; }
+  .p-kind { display: none; }
+  .p-arrow { grid-column: 3; justify-self: start; }
+
+  /* The row itself becomes the grid. Title and copy stack in column 1; the
+     thumbnail takes column 2 and spans both rows, so its top edge lines up
+     with the title rather than starting under it. */
+  /* grid-template-rows matters: the thumbnail spans both rows, and by default
+     its height is shared between them — which stretched row 1 and left the
+     title floating above a gap. Pinning row 1 to its content and giving the
+     slack to row 2 keeps the copy directly under the title. align-self: start
+     stops the two text blocks from stretching inside their rows. */
+  .p-row {
+    display: grid;
+    grid-template-columns: 1fr minmax(200px, 38%);
+    grid-template-rows: min-content 1fr;
+    column-gap: var(--s-3);
+  }
+  .p-head, .p-body { align-self: start; }
+  .p-head { grid-column: 1; grid-row: 1; }
+  /* No padding on .p-body: max-height caps the CONTENT box, and overflow
+     clips to the PADDING box, so any padding here becomes a window that
+     leaks the first line of copy out of a collapsed row. The bottom space
+     lives on .p-text, inside what gets clipped. */
+  .p-body { grid-column: 1; grid-row: 2; }
+
+  .p-media {
+    grid-column: 2; grid-row: 1 / span 2; align-self: start;
+    margin: var(--s-3) 0;
+    max-height: 0; overflow: hidden;
+    /* max-height:0 still leaves the two 1px borders showing as a hairline in
+       every collapsed row, so the border collapses with it. */
+    border-width: 0;
+    transition: max-height 0.38s cubic-bezier(0.22, 0.61, 0.36, 1), border-width 0.2s;
+  }
+  .p-row:hover .p-media, .p-row:focus-within .p-media { max-height: 26rem; border-width: 1px; }
 }
 
 /* At 320px the two-line brand leaves too little room and "Contact" gets
@@ -493,10 +558,21 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
   list-style: none; margin: 0 0 var(--s-2); padding: 0;
 }
 .chip-list li {
+  display: inline-flex; align-items: center; gap: 0.4em;
   font-family: var(--font-body); font-size: 0.8rem;
   color: var(--text-dim); margin: 0;
   padding: 0.3em 0.75em;
   border: 1px solid var(--purple-soft); border-radius: var(--radius-pill);
+}
+/* Same mask mechanism as the hero tool row, at chip scale. Chips without an
+   icon keep their own width — inline-flex on the li means the gap only
+   exists when there is something to sit beside. */
+.chip-list li i {
+  width: 14px; height: 14px; flex: none;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center; mask-position: center;
+  -webkit-mask-size: contain; mask-size: contain;
 }
 
 /* Native disclosure: keyboard-operable, and the content is in the DOM
