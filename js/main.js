@@ -418,21 +418,39 @@
   var next = { href: main.dataset.next, title: main.dataset.nextTitle };
   var prev = { href: main.dataset.prev, title: main.dataset.prevTitle };
 
-  /* ---- the hint ---- */
-  var hint = document.createElement('a');
-  hint.className = 'swipe-hint';
-  hint.href = next.href;
-  hint.setAttribute('aria-label', 'Next project: ' + next.title);
-  hint.title = 'Next project: ' + next.title;
-  hint.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
-                   'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
-                   '<path d="M9 18l6-6-6-6"/></svg>';
-  document.body.appendChild(hint);
+  /* ---- the hints ---- */
+  function chevron(d) {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+           'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+           '<path d="' + d + '"/></svg>';
+  }
+
+  var hints = [];
+  function addHint(side, target, label, path) {
+    if (!target || !target.href) return;
+    var a = document.createElement('a');
+    a.className = 'swipe-hint swipe-hint--' + side;
+    a.href = target.href;
+    a.setAttribute('aria-label', label + ': ' + target.title);
+    a.title = label + ': ' + target.title;
+    a.innerHTML = chevron(path);
+    // Tapping a hint is a navigation in the same direction as the swipe it
+    // stands for, so it gets the same transition.
+    a.addEventListener('click', function () {
+      try { sessionStorage.setItem('vt-dir', side === 'next' ? 'fwd' : 'back'); } catch (err) {}
+    });
+    document.body.appendChild(a);
+    hints.push(a);
+  }
+
+  addHint('prev', prev, 'Previous project', 'M15 18l-6-6 6-6');
+  addHint('next', next, 'Next project',     'M9 18l6-6-6-6');
+  if (!hints.length) return;
 
   var caseNav = document.querySelector('.case-nav');
   if (caseNav && 'IntersectionObserver' in window) {
     new IntersectionObserver(function (e) {
-      hint.classList.toggle('is-away', e[0].isIntersecting);
+      hints.forEach(function (h) { h.classList.toggle('is-away', e[0].isIntersecting); });
     }, { threshold: 0.2 }).observe(caseNav);
   }
 

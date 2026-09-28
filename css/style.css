@@ -831,12 +831,10 @@ input, textarea, [contenteditable="true"] { cursor: text; }
 @media (max-width: 760px) {
   .swipe-hint {
     display: inline-flex; align-items: center; justify-content: center;
-    position: fixed; right: 0; top: 50%; translate: 0 -50%;
+    position: fixed; top: 50%; translate: 0 -50%;
     z-index: 40;
     width: 34px; height: 52px;                 /* tall enough to hit with a thumb */
-    padding-right: 2px;
-    border: 1px solid var(--purple); border-right: none;
-    border-radius: var(--radius) 0 0 var(--radius);
+    border: 1px solid var(--purple);
     background: rgba(25, 16, 28, 0.9);
     backdrop-filter: blur(8px);
     color: var(--accent);
@@ -845,6 +843,19 @@ input, textarea, [contenteditable="true"] { cursor: text; }
   .swipe-hint:not(.is-away) { visibility: visible; transition: opacity 0.35s ease, visibility 0s; }
   .swipe-hint:hover, .swipe-hint:focus-visible { text-decoration: none; color: var(--accent); }
   .swipe-hint svg { width: 16px; height: 16px; animation: swipe-nudge 2.4s ease-in-out infinite; }
+
+  /* Each one hugs its own edge, rounded on the inside only, and nudges the
+     way the finger should travel: the right arrow pulls left for "next",
+     the left arrow pushes right for "previous". */
+  .swipe-hint--next {
+    right: 0; padding-right: 2px;
+    border-right: none; border-radius: var(--radius) 0 0 var(--radius);
+  }
+  .swipe-hint--prev {
+    left: 0; padding-left: 2px;
+    border-left: none; border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .swipe-hint--prev svg { animation-name: swipe-nudge-back; }
 
   /* Once the Next-project buttons are on screen the hint is repeating
      something already visible, so it steps out of the way. */
@@ -857,6 +868,11 @@ input, textarea, [contenteditable="true"] { cursor: text; }
 @keyframes swipe-nudge {
   0%, 60%, 100% { transform: translateX(0); }
   75%           { transform: translateX(-4px); }
+  88%           { transform: translateX(0); }
+}
+@keyframes swipe-nudge-back {
+  0%, 60%, 100% { transform: translateX(0); }
+  75%           { transform: translateX(4px); }
   88%           { transform: translateX(0); }
 }
 @media (prefers-reduced-motion: reduce) {
