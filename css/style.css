@@ -845,13 +845,19 @@ input, textarea, [contenteditable="true"] { cursor: text; }
   }
   .swipe-hint:not(.is-away) { visibility: visible; transition: opacity 0.35s ease, visibility 0s; }
   .swipe-hint:hover, .swipe-hint:focus-visible { text-decoration: none; color: var(--accent); }
-  .swipe-hint svg { width: 20px; height: 20px; animation: swipe-nudge-out-right 2.4s ease-in-out infinite; }
+  /* The text column starts 24px in, so anything wider than that sits on top
+     of it. 17px of chevron plus a 3px inset clears the gutter with room to
+     spare, and the nudge is trimmed to 3px so the peak of the animation
+     lands flush with the screen edge instead of being clipped by it. */
+  .swipe-hint svg { width: 17px; height: 17px; animation: swipe-nudge-out-right 2.4s ease-in-out infinite; }
 
   /* Each one hugs its own edge and nudges outward, away from the screen —
      the direction the content is being pulled toward, and the same way the
      chevron itself points. */
-  .swipe-hint--next { right: 2px; }
-  .swipe-hint--prev { left: 2px; }
+  /* The 34px tap target stays exactly as it was; only the chevron inside it
+     moves outward, to the edge of the box. */
+  .swipe-hint--next { right: 0; justify-content: flex-end; padding-right: 3px; }
+  .swipe-hint--prev { left: 0;  justify-content: flex-start; padding-left: 3px; }
   .swipe-hint--prev svg { animation-name: swipe-nudge-out-left; }
 
   /* Once the Next-project buttons are on screen the hint is repeating
@@ -864,12 +870,12 @@ input, textarea, [contenteditable="true"] { cursor: text; }
 
 @keyframes swipe-nudge-out-right {
   0%, 60%, 100% { transform: translateX(0); }
-  75%           { transform: translateX(4px); }
+  75%           { transform: translateX(3px); }
   88%           { transform: translateX(0); }
 }
 @keyframes swipe-nudge-out-left {
   0%, 60%, 100% { transform: translateX(0); }
-  75%           { transform: translateX(-4px); }
+  75%           { transform: translateX(-3px); }
   88%           { transform: translateX(0); }
 }
 @media (prefers-reduced-motion: reduce) {

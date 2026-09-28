@@ -40,7 +40,11 @@
       var url = new URL(window.location.href);
       if (vertical === 'product') url.searchParams.delete('v');
       else url.searchParams.set('v', vertical);
-      history.replaceState(null, '', url.toString() + window.location.hash);
+      /* No `+ location.hash` here: `new URL(location.href)` already carries
+         the fragment, so appending it again doubled it on every click —
+         #work, #work#work, #work#work#work#work — and a fragment that
+         matches no element id stops the deep link from scrolling anywhere. */
+      history.replaceState(null, '', url.toString());
     }
   }
 
