@@ -70,13 +70,26 @@
    which would otherwise leave hidden panels and the language switch visible. */
 [hidden] { display: none !important; }
 
-html { scroll-behavior: smooth; background: var(--bg-deep); }
+/* `scroll-behavior` stays auto: js/main.js takes over the smoothing with
+   Lenis, and leaving the browser's own animation on means the two fight
+   over the same scroll position. Lenis is not loaded on touch devices or
+   under reduced motion, and there the jumps are instant — which is the
+   correct behaviour in both cases, so nothing is lost. */
+html { scroll-behavior: auto; background: var(--bg-deep); }
+
+/* Lenis' own stylesheet, inlined — four rules is not worth a second file.
+   The height:auto pair is the one that matters: it stops the page from
+   being clamped to the viewport once Lenis takes over. */
+html.lenis, html.lenis body { height: auto; }
+.lenis:not(.lenis-autoToggle).lenis-stopped { overflow: clip; }
+.lenis [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-smooth iframe { pointer-events: none; }
 
 /* The nav is sticky, so an anchor lands with the section's first line
    underneath it. scroll-margin-top reserves exactly the nav's height plus a
    little air, so the heading stops just below it instead of behind it.
    --nav-h is measured by js/main.js; this is the pre-script fallback. */
-:root { --nav-h: 72px; }
+:root { --nav-h: 72px; --footer-h: 122px; }
 section[id], header[id], main[id] { scroll-margin-top: calc(var(--nav-h) + 0.75rem); }
 body {
   margin: 0;
@@ -106,7 +119,17 @@ h1, h2 {
 h3, h4 { font-family: var(--font-label); text-transform: uppercase; line-height: 1.3; letter-spacing: 0.01em; }
 
 /* ---------- Layout ---------- */
-.wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--s-3); }
+/* The column tracks the viewport instead of stopping at a fixed number: on
+   a 2560 monitor the old cap left it at 50% of the screen, and 38% at 3440.
+   `max()` is what keeps that from backfiring — 85% of a 1280 laptop is
+   narrower than the column already is there, so the rule reads "85%, or
+   what it measures today, whichever is wider". Nothing below ~1530px moves. */
+.wrap {
+  width: max(85%, min(100%, var(--maxw)));
+  max-width: none;
+  margin: 0 auto;
+  padding: 0 var(--s-3);
+}
 section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
 
 .section-label {
@@ -130,7 +153,10 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
   border-bottom: 1px solid var(--purple-soft);
 }
 .nav-inner {
-  max-width: var(--maxw); margin: 0 auto;
+  /* Same measure as .wrap, so the brand and the links line up with the
+     content below them at every width. */
+  width: max(85%, min(100%, var(--maxw)));
+  max-width: none; margin: 0 auto;
   padding: var(--s-2) var(--s-3);
   display: flex; align-items: center; justify-content: space-between; gap: var(--s-2);
 }
@@ -256,7 +282,9 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
   display: flex; align-items: center;
   padding: clamp(2rem, 7vh, 5rem) 0;
 }
-.hero > .wrap { width: 100%; }
+/* No width:100% here either: .wrap now carries its own explicit width, and
+   this rule outranked it, leaving the hero full-bleed while the nav and the
+   other sections sat at 85%. */
 
 /* Short landscape screens: centring with a tall min-height would push the
    content off. Let it sit at the top and the hero grow instead. */
@@ -279,11 +307,50 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
 .hero .tool-list { margin-bottom: var(--s-2); }
 
 /* Intro band, offset to the right — the page stops being one centred column. */
-.intro { border-top: 1px solid var(--purple-soft); padding: var(--s-5) 0; }
-.intro-body { max-width: 56ch; margin-left: auto; }
-.intro-lead { font-size: clamp(1.1rem, 2.2vw, 1.45rem); color: var(--text); margin-bottom: var(--s-2); }
-.intro-body p { color: var(--text-dim); }
-@media (max-width: 760px) { .intro-body { margin-left: 0; } }
+/* ---------- Hero note ----------
+   The old intro band, folded into the hero's lower right. Corner brackets
+   rather than a full border: the frame marks the block as a distinct voice
+   without drawing a box around it, which would read as a card.
+   Eight gradients, two arms per corner — cheaper than four extra elements
+   and it scales with the padding. */
+.hero-note {
+  --arm: 16px;
+  --line: 1px;
+  --bracket: var(--accent-70);
+  padding: var(--s-2) var(--s-3);
+  background:
+    linear-gradient(var(--bracket), var(--bracket))   0%   0% / var(--arm) var(--line) no-repeat,
+    linear-gradient(var(--bracket), var(--bracket))   0%   0% / var(--line) var(--arm) no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) 100%   0% / var(--arm) var(--line) no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) 100%   0% / var(--line) var(--arm) no-repeat,
+    linear-gradient(var(--bracket), var(--bracket))   0% 100% / var(--arm) var(--line) no-repeat,
+    linear-gradient(var(--bracket), var(--bracket))   0% 100% / var(--line) var(--arm) no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) 100% 100% / var(--arm) var(--line) no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) 100% 100% / var(--line) var(--arm) no-repeat;
+  /* A single transform origin, ready for the cursor-follow pass later. */
+  will-change: transform;
+}
+.hero-note p { color: var(--text-dim); font-size: 0.88rem; }
+.hero-note p + p { margin-top: var(--s-2); }
+.hero-note-lead { color: var(--text) !important; }
+
+@media (min-width: 761px) {
+  /* Text left, note right, both sitting on the same baseline — the note's
+     bottom lines up with the entry buttons, as in the design. */
+  .hero > .wrap {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 24rem);
+    align-items: end;
+    gap: var(--s-4);
+  }
+  .hero-note { justify-self: end; max-width: 34ch; }
+}
+
+@media (max-width: 760px) {
+  /* No room for a corner panel on a phone: it becomes the block that follows
+     the buttons, which is where it used to live anyway. */
+  .hero-note { margin-top: var(--s-4); max-width: 46ch; }
+}
 
 /* ---------- Tool row ----------
    Icons are SVG masks filled with currentColor, so a single CSS property
@@ -531,6 +598,65 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
   .p-kind { grid-column: 2; }
 }
 
+/* Work and Contact each own a screen, like the hero above them. min-height,
+   not height: when the content needs more room — a short laptop, an open
+   project row, the contact form on a small window — the section grows
+   instead of clipping. Desktop only; on a phone the content already runs
+   past a viewport and forcing the measure would only add empty space. */
+@media (min-width: 761px) {
+  #work, #contact {
+    min-height: calc(100svh - var(--nav-h));
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  /* Contact shares its screen with the footer: landing on the last section
+     should show the way to reach her, not hide it one scroll below. Its
+     measure is the window minus the nav AND the footer. --footer-h is
+     measured by js/main.js, same as --nav-h. */
+  /* The 0.75rem is the air the anchor offset adds above every section: it is
+     part of the budget, and leaving it out pushed the footer 12px past the
+     bottom edge on every screen. */
+  #contact { min-height: calc(100svh - var(--nav-h) - var(--footer-h) - 0.75rem); }
+  /* Centring already supplies the breathing room the padding was for, and at
+     laptop heights the two together push content off the screen. Projects
+     needs the same trim: at 1280x720 it stood at 700px against 653 of room,
+     which switched the stepping off entirely — the laptop case. */
+  #work { padding-top: var(--s-3); padding-bottom: var(--s-3); }
+  /* Contact gets the tighter one: it is the section sharing its screen with
+     the footer, so its budget is a footer shorter than the rest. */
+  #contact { padding-top: var(--s-2); padding-bottom: var(--s-2); }
+
+  /* Name and email side by side. One field row is ~73px, and that row is
+     the difference between the footer being visible on a 720px screen and
+     not. The message box and the button keep the full width. */
+  .contact-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: var(--s-2);
+    margin-top: var(--s-2);
+  }
+  /* The last 24px needed to clear a 720px laptop: a slightly shorter message
+     box and a tighter heading. Four rows of typing still fit. */
+  #contact .section-title { margin-bottom: var(--s-2); }
+  /* #contact prefix matters: `.contact-form textarea` ties with the base
+     `.field textarea` rule, which sits later in the file and would win. */
+  /* rows="4" sets the natural height, so a smaller min-height changes
+     nothing — the box has to be given an explicit height, and the base
+     min-height has to be released for it to take. Still resizable by drag. */
+  #contact .field textarea { min-height: 0; height: 4.75rem; }
+  .contact-form .field:nth-of-type(3),
+  .contact-form button,
+  .contact-form .form-status { grid-column: 1 / -1; }
+  /* The button spans both columns so it starts at the left edge of the form,
+     but a grid item stretches by default and it became a full-width bar.
+     justify-self keeps it the size of its own label. */
+  .contact-form button { justify-self: start; }
+  /* The old `#work > .wrap { width: 100% }` patch lived here. It existed
+     because an auto cross-axis margin cancels a flex item's stretch and the
+     wrap collapsed to its content. .wrap now carries an explicit width, which
+     solves that on its own — and the patch outranked the new rule, pinning
+     every section to the full window. Removed, not weakened. */
+}
+
 /* ---------- Tags ---------- */
 .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
 .tag {
@@ -715,7 +841,6 @@ footer .wrap > .copyright:only-child { margin-left: auto; }
 .skip-link:focus { left: var(--s-2); top: var(--s-2); }
 .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
   * { transition: none !important; }
 }
 

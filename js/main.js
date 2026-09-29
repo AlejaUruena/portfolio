@@ -252,6 +252,9 @@
        for their scroll-margin-top. */
     document.documentElement.style.setProperty(
       '--nav-h', Math.round(nav.getBoundingClientRect().height) + 'px');
+    var foot = document.querySelector('footer');
+    if (foot) document.documentElement.style.setProperty(
+      '--footer-h', Math.round(foot.getBoundingClientRect().height) + 'px');
   }
   sync();
 
@@ -520,3 +523,194 @@ window.addEventListener('pagereveal', function (e) {
   e.viewTransition.finished.then(clear, clear);
   function clear() { delete document.documentElement.dataset.nav; }
 });
+
+
+/* ---------------------------------------------------------------------------
+   Smooth scrolling (Lenis)
+   Desktop only, and only with a precise pointer. Touch keeps the system's own
+   momentum: syncTouch is the setting people complain about, because it
+   replaces a scroll the phone renders on its own compositor thread with one
+   driven from JavaScript.
+
+   Lenis honours prefers-reduced-motion by itself (respectReducedMotion is on
+   by default), but the instance is not even created in that case — no library,
+   no rAF loop, no cost at all for someone who asked for less motion.
+--------------------------------------------------------------------------- */
+(function () {
+  if (typeof Lenis !== 'function') return;                 // script failed: native scroll
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var lenis = new Lenis({
+    /* Short and light. A long duration is what makes a site feel like it is
+       arguing with the wheel; 0.8s reads as weight rather than lag. */
+    duration: 0.8,
+    easing: function (t) { return 1 - Math.pow(1 - t, 3); },  // ease-out cubic
+    smoothWheel: true,
+    syncTouch: false,          // the phone keeps its native scrolling
+    autoRaf: true,             // Lenis runs its own loop
+    anchors: false             // handled below, so the nav offset is respected
+  });
+  window.lenis = lenis;
+
+  /* No offset here on purpose. This version of Lenis already honours the
+     section's scroll-margin-top, so passing the nav height again landed the
+     heading exactly one nav-height too low. Measured, not assumed. */
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href*="#"]');
+    if (!a) return;
+    if (a.target === '_blank' || e.metaKey || e.ctrlKey || e.shiftKey) return;
+
+    var url = new URL(a.href, location.href);
+    if (url.pathname !== location.pathname || url.host !== location.host) return;
+    if (!url.hash || url.hash === '#') return;
+
+    var target = document.querySelector(url.hash);
+    if (!target) return;
+
+    e.preventDefault();
+    lenis.scrollTo(target);
+    // Keep the address bar honest without adding a history entry per click.
+    history.replaceState(null, '', url.hash);
+  });
+})();
+
+
+/* ---------------------------------------------------------------------------
+   Section stepping
+   One section per gesture. The earlier version let Lenis' inertia run free
+   and snapped to whatever point was nearest once it stopped — which meant a
+   firm flick from the hero landed on Contact and skipped Projects entirely,
+   at every screen size I measured. No threshold fixes that: "coast, then
+   snap to nearest" cannot promise you will not fly past a section.
+
+   So the wheel moves to the ADJACENT point and no further. There is nothing
+   to free-scroll inside a section anyway — each one is exactly a screen —
+   and this is the only model that can guarantee no section is skipped.
+
+   Only where that promise holds: every section must measurably fit the
+   window. Anywhere else (short screens, touch, reduced motion) the page
+   scrolls normally, which is what those contexts need.
+--------------------------------------------------------------------------- */
+(function () {
+  var lenis = window.lenis;
+  if (!lenis) return;
+
+  var sections = ['.hero', '#work', '#contact']
+    .map(function (s) { return document.querySelector(s); })
+    .filter(Boolean);
+  if (sections.length < 2) return;
+
+  var points = [];
+  var index = 0;
+  var busy = false;
+  var acc = 0;
+  var accTimer;
+
+  var STEP = 30;        // px of wheel before a gesture counts, so a nudge is not a jump
+  var COOLDOWN = 260;   // a trackpad fires a stream of events; one gesture is one step
+
+  function navOffset() {
+    var v = getComputedStyle(document.documentElement).getPropertyValue('--nav-h');
+    return (parseInt(v, 10) || 72) + 12;
+  }
+
+  function fits() {
+    var room = window.innerHeight - navOffset() + 16;
+    var foot = document.querySelector('footer');
+    var footH = foot ? foot.getBoundingClientRect().height : 0;
+    return sections.every(function (el, i) {
+      /* The last section has to leave room for the footer it shares the
+         screen with; the others get the whole measure. */
+      var allowed = (i === sections.length - 1) ? room - footH : room;
+      return el.getBoundingClientRect().height <= allowed + 24;
+    });
+  }
+
+  function measure() {
+    var off = navOffset();
+    points = sections.map(function (el, i) {
+      // The hero rests at 0: the sticky nav occupies real space above it.
+      if (i === 0) return 0;
+      return Math.max(0, Math.round(el.getBoundingClientRect().top + window.scrollY - off));
+    });
+    var bottom = Math.round(document.documentElement.scrollHeight - window.innerHeight);
+    if (bottom - points[points.length - 1] > 40) points.push(bottom);
+  }
+
+  function nearestIndex() {
+    var y = window.scrollY, best = 0, d = Infinity;
+    points.forEach(function (v, i) {
+      var dist = Math.abs(v - y);
+      if (dist < d) { d = dist; best = i; }
+    });
+    return best;
+  }
+
+  function goTo(i) {
+    i = Math.max(0, Math.min(points.length - 1, i));
+    if (i === index && Math.abs(window.scrollY - points[i]) < 4) return;
+    index = i;
+    busy = true;
+    lenis.scrollTo(points[i], {
+      duration: 0.9,
+      easing: function (t) { return 1 - Math.pow(1 - t, 3); },
+      onComplete: function () { setTimeout(function () { busy = false; }, COOLDOWN); }
+    });
+    // Safety net: if onComplete never fires, do not lock the page forever.
+    setTimeout(function () { busy = false; }, 1600);
+  }
+
+  var active = false;
+
+  function onWheel(e) {
+    if (!active) return;
+    e.preventDefault();               // Lenis must not also coast
+    if (busy) return;
+
+    acc += e.deltaY;
+    clearTimeout(accTimer);
+    accTimer = setTimeout(function () { acc = 0; }, 180);
+    if (Math.abs(acc) < STEP) return;
+
+    var dir = acc > 0 ? 1 : -1;
+    acc = 0;
+    index = nearestIndex();
+    goTo(index + dir);
+  }
+
+  function onKey(e) {
+    if (!active || busy) return;
+    var map = { PageDown: 1, PageUp: -1, ArrowDown: 1, ArrowUp: -1, ' ': 1 };
+    if (e.key === 'Home') { e.preventDefault(); goTo(0); return; }
+    if (e.key === 'End')  { e.preventDefault(); goTo(points.length - 1); return; }
+    if (!(e.key in map)) return;
+    // Leave form fields alone.
+    if (e.target.closest && e.target.closest('input, textarea, select, [contenteditable]')) return;
+    e.preventDefault();
+    index = nearestIndex();
+    goTo(index + map[e.key]);
+  }
+
+  function sync() {
+    measure();
+    var should = fits();
+    if (should === active) { index = nearestIndex(); return; }
+    active = should;
+    if (active) {
+      window.addEventListener('wheel', onWheel, { passive: false });
+      window.addEventListener('keydown', onKey);
+    } else {
+      window.removeEventListener('wheel', onWheel, { passive: false });
+      window.removeEventListener('keydown', onKey);
+    }
+    index = nearestIndex();
+  }
+
+  sync();
+
+  var t;
+  window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(sync, 200); });
+  // A nav link or the vertical tabs can change the page height; re-measure.
+  document.addEventListener('click', function () { setTimeout(sync, 900); });
+})();
