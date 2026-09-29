@@ -714,3 +714,176 @@ window.addEventListener('pagereveal', function (e) {
   // A nav link or the vertical tabs can change the page height; re-measure.
   document.addEventListener('click', function () { setTimeout(sync, 900); });
 })();
+
+
+/* ---------------------------------------------------------------------------
+   Hero entrance and cursor pull
+   The headline is split into words and each one rises into place; the rest of
+   the hero follows a beat behind. Then, on a precise pointer, the words and
+   the note lean toward the cursor — a few pixels, with a hard cap, so it
+   reads as attention rather than as a toy.
+
+   No animation library: this is a stagger and a lerp, both of which CSS and
+   30 lines of rAF already do. GSAP earns its 32KB when there is a timeline
+   to choreograph or shapes to morph; here it would be weight without work.
+--------------------------------------------------------------------------- */
+(function () {
+  var line = document.querySelector('.hero-line');
+  if (!line) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  /* ---- split into words ---- */
+  var words = line.textContent.trim().split(/\s+/);
+  var boxes = [];
+  line.textContent = '';
+  words.forEach(function (word, i) {
+    var box = document.createElement('span');
+    box.className = 'w';
+    box.style.setProperty('--i', i);
+    var inner = document.createElement('span');
+    inner.className = 'wi';
+    inner.textContent = word;
+    box.appendChild(inner);
+    line.appendChild(box);
+    // A real space between the boxes, so the accessible name still reads as
+    // a sentence and the line can still wrap.
+    if (i < words.length - 1) line.appendChild(document.createTextNode(' '));
+    boxes.push(box);
+  });
+
+  var root = document.documentElement;
+  root.classList.add('hero-anim');
+
+  /* ---- constellation ----
+     Art-directed, not random: the positions are fixed so the hero looks the
+     same on every visit, and they sit clear of the headline block on the
+     left and the note on the lower right. `d` is depth — how far a star
+     travels with the cursor — and it tracks size, because the parallax only
+     reads as depth if the big ones move more than the small ones.
+     x/y in %, w in px, o = resting opacity, d = depth 0..1. */
+  var FIELD = [
+    { x:  6, y: 14, w: 26, o: .85, d: 1.0, t: 'solid'   },
+    { x: 17, y:  8, w: 11, o: .55, d: .45, t: 'outline' },
+    { x: 28, y: 20, w:  6, o: .5,  d: .3,  t: 'dot'     },
+    { x: 43, y:  9, w: 18, o: .7,  d: .75, t: 'solid'   },
+    { x: 56, y: 17, w:  9, o: .45, d: .35, t: 'outline' },
+    { x: 66, y:  7, w: 22, o: .8,  d: .9,  t: 'solid'   },
+    { x: 78, y: 19, w:  6, o: .45, d: .25, t: 'dot'     },
+    { x: 88, y: 11, w: 13, o: .6,  d: .55, t: 'outline' },
+    { x: 61, y: 33, w: 28, o: .9,  d: 1.0, t: 'solid'   },
+    { x: 72, y: 42, w:  7, o: .4,  d: .3,  t: 'dot'     },
+    { x: 93, y: 34, w: 10, o: .5,  d: .4,  t: 'outline' },
+    { x: 52, y: 52, w: 12, o: .5,  d: .5,  t: 'outline' },
+    { x:  4, y: 62, w:  6, o: .4,  d: .25, t: 'dot'     },
+    { x: 12, y: 84, w: 20, o: .75, d: .85, t: 'solid'   },
+    { x: 27, y: 92, w: 10, o: .5,  d: .4,  t: 'outline' },
+    { x: 41, y: 78, w:  6, o: .4,  d: .3,  t: 'dot'     },
+    { x: 58, y: 88, w: 24, o: .8,  d: .95, t: 'solid'   },
+    { x: 76, y: 80, w: 11, o: .55, d: .45, t: 'outline' },
+    { x: 90, y: 93, w:  7, o: .45, d: .3,  t: 'dot'     },
+    { x: 96, y: 64, w: 16, o: .65, d: .7,  t: 'solid'   }
+  ];
+
+  var field = document.createElement('div');
+  field.className = 'hero-stars';
+  field.setAttribute('aria-hidden', 'true');   // decorative: no name, no role
+  var stars = [];
+  FIELD.forEach(function (c, i) {
+    var el = document.createElement('span');
+    el.className = 'star s-' + c.t;
+    el.style.cssText =
+      'left:' + c.x + '%;top:' + c.y + '%;' +
+      '--w:' + c.w + 'px;--o:' + c.o + ';' +
+      /* Two palette colours, alternating, so the field belongs to the site
+         rather than floating on top of it. */
+      '--c:' + (i % 3 === 0 ? 'var(--text)' : 'var(--accent)') + ';' +
+      /* Entrance lands after the headline; twinkle periods are deliberately
+         uneven so they never pulse in unison. */
+      '--d:' + (0.55 + i * 0.045).toFixed(2) + 's;' +
+      '--tw:' + (3.4 + (i % 5) * 0.9).toFixed(1) + 's';
+    field.appendChild(el);
+    stars.push({ el: el, depth: c.d });
+  });
+  var heroEl = document.querySelector('.hero');
+  if (heroEl) heroEl.insertBefore(field, heroEl.firstChild);
+
+  /* ---- play it ---- */
+  function play() { requestAnimationFrame(function () { root.classList.add('is-in'); }); }
+  var started = false;
+  function start() { if (!started) { started = true; play(); } }
+  // Wait for the webfonts so the words do not reflow mid-rise, but never
+  // wait long: a hidden headline is the worst failure mode here.
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(start);
+  setTimeout(start, 700);
+
+  /* ---- cursor pull ---- */
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+  var note = document.querySelector('.hero-note');
+  var targets = boxes.map(function (el) { return { el: el, max: 9, radius: 320, x: 0, y: 0, tx: 0, ty: 0 }; });
+  if (note) targets.push({ el: note, max: 14, radius: 520, x: 0, y: 0, tx: 0, ty: 0 });
+
+  var hero = document.querySelector('.hero');
+  var pointer = { x: -9999, y: -9999 };
+  var running = false;
+
+  document.addEventListener('pointermove', function (e) {
+    if (e.pointerType !== 'mouse') return;
+    pointer.x = e.clientX; pointer.y = e.clientY;
+    if (!running) { running = true; requestAnimationFrame(tick); }
+  }, { passive: true });
+
+  var STAR_MAX = 26;   // px of travel for the deepest star
+
+  function tick() {
+    var rest = true;
+
+    /* The field reads the cursor's position in the hero rather than its
+       distance to each star: a constellation should drift as one plane,
+       with the near stars outrunning the far ones. */
+    if (heroEl && stars.length) {
+      var hr = heroEl.getBoundingClientRect();
+      var nx = (pointer.x - (hr.left + hr.width / 2)) / (hr.width / 2);
+      var ny = (pointer.y - (hr.top + hr.height / 2)) / (hr.height / 2);
+      if (pointer.x < -9000) { nx = 0; ny = 0; }
+      nx = Math.max(-1, Math.min(1, nx));
+      ny = Math.max(-1, Math.min(1, ny));
+      stars.forEach(function (st) {
+        st.x = (st.x || 0) + ((-nx * st.depth * STAR_MAX) - (st.x || 0)) * 0.08;
+        st.y = (st.y || 0) + ((-ny * st.depth * STAR_MAX) - (st.y || 0)) * 0.08;
+        st.el.style.setProperty('--px', st.x.toFixed(2) + 'px');
+        st.el.style.setProperty('--py', st.y.toFixed(2) + 'px');
+        // The field has to count toward "settled" as well, or the loop stops
+        // while the stars are still drifting toward their mark.
+        var tx = -nx * st.depth * STAR_MAX, ty = -ny * st.depth * STAR_MAX;
+        if (Math.abs(tx - st.x) > 0.05 || Math.abs(ty - st.y) > 0.05) rest = false;
+      });
+    }
+
+    targets.forEach(function (t) {
+      var r = t.el.getBoundingClientRect();
+      var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      var dx = pointer.x - cx, dy = pointer.y - cy;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+      // Influence falls off to nothing at the radius, so a word only reacts
+      // to a cursor that is actually near it.
+      var pull = dist > t.radius ? 0 : (1 - dist / t.radius);
+      t.tx = dist ? (dx / dist) * pull * t.max : 0;
+      t.ty = dist ? (dy / dist) * pull * t.max : 0;
+      t.x += (t.tx - t.x) * 0.12;
+      t.y += (t.ty - t.y) * 0.12;
+      if (Math.abs(t.tx - t.x) > 0.05 || Math.abs(t.ty - t.y) > 0.05) rest = false;
+      t.el.style.setProperty('--dx', t.x.toFixed(2) + 'px');
+      t.el.style.setProperty('--dy', t.y.toFixed(2) + 'px');
+    });
+    // Stop the loop once everything has settled; restart on the next move.
+    if (rest) { running = false; return; }
+    requestAnimationFrame(tick);
+  }
+
+  // Leaving the hero releases everything rather than freezing it mid-lean.
+  if (hero) hero.addEventListener('pointerleave', function () {
+    pointer.x = -9999; pointer.y = -9999;
+    if (!running) { running = true; requestAnimationFrame(tick); }
+  });
+})();

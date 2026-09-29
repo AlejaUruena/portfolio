@@ -388,6 +388,11 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
 .i-visual-studio { -webkit-mask-image: url('../assets/icons/visual-studio.svg'); mask-image: url('../assets/icons/visual-studio.svg'); }
 .i-adobe         { -webkit-mask-image: url('../assets/icons/adobe.svg');         mask-image: url('../assets/icons/adobe.svg'); }
 .i-atlassian     { -webkit-mask-image: url('../assets/icons/atlassian.svg');     mask-image: url('../assets/icons/atlassian.svg'); }
+/* Only the marks that survive being reduced to a silhouette. The Adobe trio
+   are letterforms knocked out of a solid tile: as a mask the tile is opaque
+   and the letters vanish, leaving a plain square. */
+.i-webflow       { -webkit-mask-image: url('../assets/icons/webflow.svg');       mask-image: url('../assets/icons/webflow.svg'); }
+.i-blender       { -webkit-mask-image: url('../assets/icons/blender.svg');       mask-image: url('../assets/icons/blender.svg'); }
 
 /* ---------- Buttons (pill, from the Figma frame) ---------- */
 .btn-row { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-top: var(--s-4); }
@@ -1055,4 +1060,122 @@ html[data-nav="back"]::view-transition-new(root) { animation-name: vt-enter-left
 /* Motion off: the transition collapses to a plain cut. */
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+}
+
+
+/* ---------- Hero entrance ----------
+   Every rule here is scoped to .hero-anim, a class js/main.js adds after it
+   has split the headline. Without the script the hero renders plainly: a
+   headline that never arrives is far worse than one that does not move.
+   Two transform layers, because two things move the same words: .w carries
+   the cursor shift, .wi carries the entrance. One transform property per
+   element, so neither overwrites the other. */
+.hero-anim .hero-line .w {
+  display: inline-block;
+  overflow: hidden;
+  /* Descenders (the g in "Designs") would be clipped by the overflow that
+     hides the word before it rises; the padding gives them room and the
+     negative margin gives the space back to the line box. */
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+  transform: translate3d(var(--dx, 0px), var(--dy, 0px), 0);
+}
+.hero-anim .hero-line .wi {
+  display: inline-block;
+  transform: translateY(105%);
+  opacity: 0;
+}
+.hero-anim.is-in .hero-line .wi {
+  animation: hero-word 0.8s cubic-bezier(0.18, 0.82, 0.25, 1) both;
+  animation-delay: calc(var(--i) * 70ms);
+}
+@keyframes hero-word {
+  from { transform: translateY(105%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* The rest of the hero follows the headline in, one beat behind. */
+.hero-anim .hero-sub,
+.hero-anim .hero .tool-list,
+.hero-anim .btn-row,
+.hero-anim .hero-note { opacity: 0; }
+.hero-anim.is-in .hero-sub,
+.hero-anim.is-in .hero .tool-list,
+.hero-anim.is-in .btn-row,
+.hero-anim.is-in .hero-note {
+  animation: hero-up 0.7s cubic-bezier(0.18, 0.82, 0.25, 1) both;
+}
+.hero-anim.is-in .hero-sub        { animation-delay: 0.34s; }
+.hero-anim.is-in .hero .tool-list { animation-delay: 0.44s; }
+.hero-anim.is-in .btn-row         { animation-delay: 0.52s; }
+.hero-anim.is-in .hero-note       { animation-delay: 0.60s; }
+@keyframes hero-up {
+  from { opacity: 0; translate: 0 14px; }
+  to   { opacity: 1; translate: 0 0; }
+}
+
+/* The note answers the cursor too, with its own softer pull. `translate` is
+   a separate property from `transform`, so it does not fight the entrance. */
+.hero-note { transform: translate3d(var(--dx, 0px), var(--dy, 0px), 0); }
+
+/* Motion off: nothing is hidden, nothing moves, no cursor loop. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-anim .hero-line .wi,
+  .hero-anim .hero-sub,
+  .hero-anim .hero .tool-list,
+  .hero-anim .btn-row,
+  .hero-anim .hero-note { animation: none; opacity: 1; transform: none; }
+}
+
+
+/* ---------- Hero constellation ----------
+   Built by js/main.js, so it never appears without the motion it implies.
+   The three shapes are her own: a solid sparkle, an outlined one, and a
+   ring. They are CSS masks rather than images, which is what lets the same
+   three files carry both palette colours — and why the outlined shapes stay
+   outlined: their SVGs are strokes, so the silhouette is the outline. */
+.hero { position: relative; overflow: hidden; }
+.hero > .wrap { position: relative; z-index: 1; }
+
+.hero-stars {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.star {
+  position: absolute;
+  width: var(--w); height: calc(var(--w) * var(--ratio, 1.22));
+  background-color: var(--c, var(--accent));
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center;  mask-position: center;
+  -webkit-mask-size: contain;     mask-size: contain;
+  /* translate and scale are their own properties, so the parallax (translate)
+     and the entrance (scale) never overwrite each other the way two
+     `transform` declarations would. */
+  translate: var(--px, 0px) var(--py, 0px);
+  opacity: 0;
+  will-change: translate, opacity;
+}
+.s-solid   { -webkit-mask-image: url('../assets/stars/pointystar.svg');    mask-image: url('../assets/stars/pointystar.svg'); }
+.s-outline { -webkit-mask-image: url('../assets/stars/pointystar_sm.svg'); mask-image: url('../assets/stars/pointystar_sm.svg'); }
+.s-dot     { -webkit-mask-image: url('../assets/stars/circle_sm.svg');     mask-image: url('../assets/stars/circle_sm.svg'); --ratio: 1; }
+
+.hero-anim.is-in .star {
+  animation:
+    star-in 0.9s cubic-bezier(0.18, 0.82, 0.25, 1) both,
+    star-tw var(--tw, 4s) ease-in-out infinite;
+  animation-delay: var(--d), calc(var(--d) + 0.9s);
+}
+@keyframes star-in {
+  from { opacity: 0; scale: 0.4; }
+  to   { opacity: var(--o, 0.7); scale: 1; }
+}
+/* A slow breath, not a blink: the range is narrow on purpose. */
+@keyframes star-tw {
+  0%, 100% { opacity: var(--o, 0.7); }
+  50%      { opacity: calc(var(--o, 0.7) * 0.45); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .star { animation: none; opacity: var(--o, 0.7); translate: none; }
 }
