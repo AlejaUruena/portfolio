@@ -565,7 +565,10 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
   .p-head { grid-template-columns: 2.2rem minmax(0, 1fr) auto; padding-bottom: var(--s-2); }
   .p-arrow { display: none; }
   .p-more { grid-column: 2; justify-self: start; margin-top: var(--s-1); }
-  .p-media video.thumb-motion { display: none; }
+  /* The clip is NOT hidden on touch any more: js/main.js plays the most
+     visible one as you scroll. It stays at opacity 0 until .is-playing
+     turns it on, and preload="none" means nothing is fetched until then,
+     so a row that never reaches the screen still costs zero bytes. */
 }
 
 /* Desktop layout of a project row.

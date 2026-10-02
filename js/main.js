@@ -123,6 +123,81 @@
         clip.currentTime = 0;
       });
     });
+
+  /* ---------------------------------------------------------------
+     Touch: the same previews, driven by the viewport instead.
+
+     A phone has no hover, so without this the clips never play there at
+     all. The trigger is the thumbnail entering the screen — the thumbnail,
+     not the whole row: a row on a narrow screen can be taller than the
+     viewport, so a ratio threshold measured on the row would never be
+     reached and nothing would ever play.
+
+     Only ONE clip plays at a time: the most visible one. Several decoding
+     at once is what makes a mid-range phone stutter, and two moving
+     thumbnails on one screen compete for attention anyway.
+
+     Four ways out, all of them honoured live rather than cached at load:
+       · prefers-reduced-motion
+       · Save-Data (the visitor asked their browser to spend less)
+       · the tab going to the background
+       · play() being refused — the poster is already a complete answer
+     preload="none" still holds, so a clip is only fetched the first time
+     it actually has to play. A visitor who never scrolls to Work pays
+     nothing.
+     --------------------------------------------------------------- */
+  } else if ('IntersectionObserver' in window) {
+    var saveData = !!(navigator.connection && navigator.connection.saveData);
+    var clips = [];
+    document.querySelectorAll('.p-row').forEach(function (card) {
+      var clip = card.querySelector('.thumb-motion');
+      if (clip && clip.parentNode) {
+        clips.push({ card: card, clip: clip, box: clip.parentNode, ratio: 0 });
+      }
+    });
+
+    if (clips.length && !saveData) {
+      var VISIBLE = 0.6;         /* 60% of the thumbnail, not of the row */
+      var playing = null;
+
+      var stop = function (entry) {
+        if (!entry) return;
+        entry.card.classList.remove('is-playing');
+        entry.clip.pause();
+        entry.clip.currentTime = 0;
+      };
+
+      var pick = function () {
+        if (stillMotion.matches || document.hidden) { stop(playing); playing = null; return; }
+        var best = null;
+        clips.forEach(function (e) {
+          if (e.ratio >= VISIBLE && (!best || e.ratio > best.ratio)) best = e;
+        });
+        if (best === playing) return;
+        stop(playing);
+        playing = best;
+        if (!playing) return;
+        playing.card.classList.add('is-playing');
+        var started = playing.clip.play();
+        if (started && started.catch) started.catch(function () {
+          if (playing) playing.card.classList.remove('is-playing');
+        });
+      };
+
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          for (var i = 0; i < clips.length; i++) {
+            if (clips[i].box === en.target) { clips[i].ratio = en.intersectionRatio; break; }
+          }
+        });
+        pick();
+      }, { threshold: [0, 0.25, 0.5, 0.6, 0.75, 1] });
+
+      clips.forEach(function (e) { io.observe(e.box); });
+      document.addEventListener('visibilitychange', pick);
+      if (stillMotion.addEventListener) stillMotion.addEventListener('change', pick);
+      else if (stillMotion.addListener) stillMotion.addListener(pick);
+    }
   }
 
   /* ---------------------------------------------------------------

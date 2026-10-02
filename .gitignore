@@ -1,0 +1,46 @@
+# Visual Studio / VS Code local state.
+# .vs/ was already committed by accident: it holds the IDE's workspace state,
+# including the absolute path of the repo on this machine (D:\Repos\portfolio)
+# and a 300 KB content index. Nothing secret, but it is local machine state,
+# it does not belong in a public portfolio repo, and it churns on every commit.
+# Adding it here stops NEW commits; run once to stop tracking the existing copy:
+#     git rm -r --cached .vs
+.vs/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# OS noise
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# Editors
+.idea/
+*.swp
+*~
+
+# Source material that should never ship: raw captures and project files are
+# large and are not what the site serves. Export to assets/thumbs/ instead.
+*.psd
+*.ai
+*.aep
+*.prproj
+*.clip
+/raw/
+/material/
+
+# Credentials — nothing here today, and nothing should ever land here.
+# Web3Forms' access key is public by design and stays in index.html; any
+# key that is NOT public (an API secret, a token) must never be committed
+# to a static site, because the browser downloads whatever the page contains.
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+secrets.json

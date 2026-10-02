@@ -3,6 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Content Security Policy. GitHub Pages cannot send HTTP headers, so this
+     is delivered as a meta tag. It is defence in depth, not a fix for a known
+     hole: the site has no inline <script> and no on* handlers, which is what
+     makes a strict script-src 'self' possible at all. Effect: no third-party
+     script can execute, and the contact form can only post to Web3Forms.
+     'unsafe-inline' is needed for style only, because of the inline style=
+     attributes still in the markup; it does not weaken script-src.
+     NOTE: frame-ancestors is deliberately absent — browsers ignore it when
+     CSP arrives in a meta tag, so writing it here would be decoration.
+     If you add a new external host (a captcha, an embed, a font CDN), add it
+     to the matching directive here in EVERY page or it will be blocked. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; connect-src 'self' https://api.web3forms.com; form-action 'self' https://api.web3forms.com; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
+
 <!-- TEMPORARY: keeps search engines out while the case studies are still being written.
      DELETE this line once the project pages are done. -->
 <meta name="robots" content="noindex">
