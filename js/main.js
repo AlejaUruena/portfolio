@@ -72,132 +72,142 @@
   }
 
   /* ---------------------------------------------------------------
-     Motion previews on hover.
+     Motion previews.
 
-     Three conditions, all checked before a single byte is fetched:
-       · the device actually has a hovering pointer (a phone does not)
-       · the visitor has not asked for reduced motion
-       · the card has a clip to play
+     One cycle, two ways of starting it:
+       · a pointer that hovers    -> mouseenter / focus
+       · no pointer (a phone)     -> the thumbnail entering the viewport
 
-     preload="none" means the file is only requested on first hover, so a
-     visitor who never hovers pays nothing for seven video files.
+     THE CYCLE, per card, for as long as the card stays active:
+         poster held HOLD ms  ->  fade  ->  clip plays once  ->  fade  ->  repeat
+
+     The clip carries no `loop` attribute on purpose: looping in the browser
+     would never fire `ended`, and `ended` is what hands control back so the
+     poster can return. The fade is the CSS opacity transition on
+     .thumb-motion; the rewind waits FADE ms so the clip is already invisible
+     when it jumps back to frame 0 — rewinding mid-fade shows the jump.
+
+     The HOLD also pays for itself: preload is "none" until a card goes
+     active, so those first seconds are when the file downloads. By the time
+     the poster fades out the clip is usually ready. If it is not, the switch
+     waits for `canplay` rather than cross-fading into a frozen first frame.
+
+     Four ways out, all read live rather than cached at load: reduced motion,
+     Save-Data, the tab going to the background, and play() being refused —
+     in every case the poster stays, which is already a complete answer.
      --------------------------------------------------------------- */
-  var canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   var stillMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var saveData = !!(navigator.connection && navigator.connection.saveData);
+
+  /* Poster hold, counted from the moment it is fully opaque — the fades sit
+     outside it. It is a rest beat, not a wait: long enough to register as a
+     deliberate state, short enough that the motion arrives before a visitor
+     moves on. Below ~400ms a state reads as a flicker rather than a pause,
+     and anything under one FADE would start fading out before the poster
+     ever reached full opacity, so it would never actually be at rest. */
+  var HOLD = 700;
+  var FADE = 450;    /* keep in step with the .thumb-motion transition in CSS */
+
+  function makeCycle(card, clip) {
+    var activa = false, t1 = null, t2 = null;
+
+    function cancelar() { clearTimeout(t1); clearTimeout(t2); t1 = t2 = null; }
+
+    function reproducir() {
+      if (!activa || stillMotion.matches) return;
+      /* Not buffered enough yet: come back when it is. The `once` listener is
+         harmless if the card goes inactive first — reproducir() checks again. */
+      if (clip.readyState < 3) {
+        clip.addEventListener('canplay', reproducir, { once: true });
+        return;
+      }
+      card.classList.add('is-playing');
+      var pl = clip.play();
+      if (pl && pl.catch) pl.catch(function () { card.classList.remove('is-playing'); });
+    }
+
+    clip.addEventListener('ended', function () {
+      if (!activa) return;
+      card.classList.remove('is-playing');        /* fade back to the poster */
+      t1 = setTimeout(function () {
+        if (!activa) return;
+        clip.currentTime = 0;                     /* rewind while invisible */
+        t2 = setTimeout(reproducir, HOLD);
+      }, FADE);
+    });
+
+    return {
+      start: function () {
+        if (activa || stillMotion.matches || saveData) return;
+        activa = true;
+        if (clip.preload === 'none') { clip.preload = 'auto'; clip.load(); }
+        t1 = setTimeout(reproducir, HOLD);
+      },
+      stop: function () {
+        activa = false;
+        cancelar();
+        card.classList.remove('is-playing');
+        clip.pause();
+        clip.currentTime = 0;
+      }
+    };
+  }
+
+  var ciclos = [];
+  document.querySelectorAll('.p-row').forEach(function (card) {
+    var clip = card.querySelector('.thumb-motion');
+    if (!clip || !clip.parentNode) return;
+    ciclos.push({ card: card, clip: clip, box: clip.parentNode, ratio: 0, ctl: makeCycle(card, clip) });
+  });
+
+  var canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
   if (canHover) {
-    document.querySelectorAll('.p-row').forEach(function (card) {
-      var clip = card.querySelector('.thumb-motion');
-      if (!clip) return;
-
-      card.addEventListener('mouseenter', function () {
-        if (stillMotion.matches) return;   /* re-checked live, not cached at load */
-        card.classList.add('is-playing');
-        var playing = clip.play();
-        /* Autoplay can still be refused; failing silently is correct here —
-           the still image is already a complete answer. */
-        if (playing && playing.catch) playing.catch(function () {
-          card.classList.remove('is-playing');
-        });
-      });
-
-      card.addEventListener('mouseleave', function () {
-        card.classList.remove('is-playing');
-        clip.pause();
-        clip.currentTime = 0;
-      });
-
+    ciclos.forEach(function (e) {
+      e.card.addEventListener('mouseenter', function () { e.ctl.start(); });
+      e.card.addEventListener('mouseleave', function () { e.ctl.stop(); });
       /* A keyboard user tabbing onto the row gets the same thing a pointer
-         gets: CSS opens it via :focus-within, this starts the clip. */
-      card.addEventListener('focus', function () {
-        if (stillMotion.matches) return;
-        card.classList.add('is-playing');
-        var playing = clip.play();
-        if (playing && playing.catch) playing.catch(function () {
-          card.classList.remove('is-playing');
-        });
-      });
-      card.addEventListener('blur', function () {
-        card.classList.remove('is-playing');
-        clip.pause();
-        clip.currentTime = 0;
-      });
+         gets: CSS opens the row via :focus-within, this starts the cycle. */
+      e.card.addEventListener('focus', function () { e.ctl.start(); });
+      e.card.addEventListener('blur',  function () { e.ctl.stop(); });
     });
 
-  /* ---------------------------------------------------------------
-     Touch: the same previews, driven by the viewport instead.
+  } else if ('IntersectionObserver' in window && ciclos.length) {
+    /* Only ONE card cycles at a time: the most visible one. Several clips
+       decoding at once is what makes a mid-range phone stutter, and two
+       moving thumbnails on one screen compete for attention anyway.
 
-     A phone has no hover, so without this the clips never play there at
-     all. The trigger is the thumbnail entering the screen — the thumbnail,
-     not the whole row: a row on a narrow screen can be taller than the
-     viewport, so a ratio threshold measured on the row would never be
-     reached and nothing would ever play.
+       The threshold is measured on the THUMBNAIL, not on the row: a row on a
+       narrow screen can be taller than the viewport, so a ratio measured on
+       the row would never reach it and nothing would ever play. */
+    var VISIBLE = 0.6;
+    var activa = null;
 
-     Only ONE clip plays at a time: the most visible one. Several decoding
-     at once is what makes a mid-range phone stutter, and two moving
-     thumbnails on one screen compete for attention anyway.
+    var elegir = function () {
+      if (document.hidden) { if (activa) { activa.ctl.stop(); activa = null; } return; }
+      var mejor = null;
+      ciclos.forEach(function (e) {
+        if (e.ratio >= VISIBLE && (!mejor || e.ratio > mejor.ratio)) mejor = e;
+      });
+      if (mejor === activa) return;
+      if (activa) activa.ctl.stop();
+      activa = mejor;
+      if (activa) activa.ctl.start();
+    };
 
-     Four ways out, all of them honoured live rather than cached at load:
-       · prefers-reduced-motion
-       · Save-Data (the visitor asked their browser to spend less)
-       · the tab going to the background
-       · play() being refused — the poster is already a complete answer
-     preload="none" still holds, so a clip is only fetched the first time
-     it actually has to play. A visitor who never scrolls to Work pays
-     nothing.
-     --------------------------------------------------------------- */
-  } else if ('IntersectionObserver' in window) {
-    var saveData = !!(navigator.connection && navigator.connection.saveData);
-    var clips = [];
-    document.querySelectorAll('.p-row').forEach(function (card) {
-      var clip = card.querySelector('.thumb-motion');
-      if (clip && clip.parentNode) {
-        clips.push({ card: card, clip: clip, box: clip.parentNode, ratio: 0 });
-      }
-    });
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        for (var i = 0; i < ciclos.length; i++) {
+          if (ciclos[i].box === en.target) { ciclos[i].ratio = en.intersectionRatio; break; }
+        }
+      });
+      elegir();
+    }, { threshold: [0, 0.25, 0.5, 0.6, 0.75, 1] });
 
-    if (clips.length && !saveData) {
-      var VISIBLE = 0.6;         /* 60% of the thumbnail, not of the row */
-      var playing = null;
-
-      var stop = function (entry) {
-        if (!entry) return;
-        entry.card.classList.remove('is-playing');
-        entry.clip.pause();
-        entry.clip.currentTime = 0;
-      };
-
-      var pick = function () {
-        if (stillMotion.matches || document.hidden) { stop(playing); playing = null; return; }
-        var best = null;
-        clips.forEach(function (e) {
-          if (e.ratio >= VISIBLE && (!best || e.ratio > best.ratio)) best = e;
-        });
-        if (best === playing) return;
-        stop(playing);
-        playing = best;
-        if (!playing) return;
-        playing.card.classList.add('is-playing');
-        var started = playing.clip.play();
-        if (started && started.catch) started.catch(function () {
-          if (playing) playing.card.classList.remove('is-playing');
-        });
-      };
-
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (en) {
-          for (var i = 0; i < clips.length; i++) {
-            if (clips[i].box === en.target) { clips[i].ratio = en.intersectionRatio; break; }
-          }
-        });
-        pick();
-      }, { threshold: [0, 0.25, 0.5, 0.6, 0.75, 1] });
-
-      clips.forEach(function (e) { io.observe(e.box); });
-      document.addEventListener('visibilitychange', pick);
-      if (stillMotion.addEventListener) stillMotion.addEventListener('change', pick);
-      else if (stillMotion.addListener) stillMotion.addListener(pick);
-    }
+    ciclos.forEach(function (e) { io.observe(e.box); });
+    document.addEventListener('visibilitychange', elegir);
+    if (stillMotion.addEventListener) stillMotion.addEventListener('change', elegir);
+    else if (stillMotion.addListener) stillMotion.addListener(elegir);
   }
 
   /* ---------------------------------------------------------------

@@ -540,7 +540,11 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
 }
 .p-media img, .p-media video { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-.thumb-motion { position: absolute; inset: 0; opacity: 0; transition: opacity 0.25s ease; pointer-events: none; }
+/* The cross-fade between the poster and the clip. js/main.js runs the cycle
+   (poster held ~3s -> fade -> clip plays once -> fade -> repeat) and its
+   FADE constant must match this duration: it waits this long before
+   rewinding, so the jump back to frame 0 happens while invisible. */
+.thumb-motion { position: absolute; inset: 0; opacity: 0; transition: opacity 0.45s ease; pointer-events: none; }
 .p-row.is-playing .thumb-motion { opacity: 1; }
 
 .thumb-empty {
