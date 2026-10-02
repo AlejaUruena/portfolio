@@ -211,6 +211,56 @@
   }
 
   /* ---------------------------------------------------------------
+     Section entrances.
+
+     Any element carrying data-cascade="<selector>" gets its matching
+     descendants revealed one after another, with the hero's curve and
+     timing, the first time it reaches the screen. Once only: a section that
+     re-animates every time you scroll past it stops reading as an entrance
+     and starts reading as a glitch.
+
+     The markup stays inert — data-cascade alone hides nothing. The classes
+     that do the hiding are added here, so a visitor whose JS fails sees a
+     plain, complete page instead of an empty one.
+
+     Reduced motion is checked live: the CSS already neutralises the
+     animation, and skipping the setup means not even the --i variables get
+     written.
+     --------------------------------------------------------------- */
+  (function () {
+    var quieto = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var zonas = document.querySelectorAll('[data-cascade]');
+    if (!zonas.length || quieto.matches) return;
+
+    /* No IntersectionObserver (or the section is already on screen before the
+       observer can fire): reveal straight away rather than leave it hidden. */
+    var puedeObservar = 'IntersectionObserver' in window;
+
+    zonas.forEach(function (zona) {
+      var items = zona.querySelectorAll(zona.getAttribute('data-cascade'));
+      if (!items.length) return;
+      zona.classList.add('cascade');
+      items.forEach(function (el, i) {
+        el.classList.add('cascade-item');
+        /* Capped so a long list does not end up with a last item two seconds
+           behind the first; past ~10 the eye reads it as a wave anyway. */
+        el.style.setProperty('--i', Math.min(i, 10));
+      });
+
+      if (!puedeObservar) { zona.classList.add('is-in'); return; }
+
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (!en.isIntersecting) return;
+          en.target.classList.add('is-in');
+          io.unobserve(en.target);          /* once, then stop watching */
+        });
+      }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+      io.observe(zona);
+    });
+  })();
+
+  /* ---------------------------------------------------------------
      Hero entry buttons: jump to Work with a vertical already chosen.
      They are an entry point, not a second copy of the filter — the tabs
      inside Work stay, for switching once you are there.

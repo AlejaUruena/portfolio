@@ -1175,6 +1175,32 @@ html[data-nav="back"]::view-transition-new(root) { animation-name: vt-enter-left
 }
 
 
+/* ---------- Section entrances ----------
+   The same cascade as the hero, reused rather than re-invented: identical
+   keyframes (hero-up), identical curve, identical duration — so Projects,
+   Contact and About arrive with the hero's rhythm instead of a second,
+   slightly different one.
+
+   Both classes are added by js/main.js, never written in the markup. That is
+   the whole safety net: without the script nothing is ever set to opacity 0,
+   so a section that fails to animate is still a section you can read. The
+   markup only carries data-cascade="<selector>", which is inert on its own.
+
+   `translate` rather than `transform`, exactly as in the hero: .p-row and the
+   thumbnails already use `transform` for other things, and a separate
+   property cannot overwrite them. Neither opacity nor translate affects
+   layout, so the section-stepping measurements in main.js stay valid. */
+.cascade .cascade-item { opacity: 0; }
+.cascade.is-in .cascade-item {
+  animation: hero-up 0.7s cubic-bezier(0.18, 0.82, 0.25, 1) both;
+  animation-delay: calc(var(--i) * 80ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cascade .cascade-item { animation: none; opacity: 1; translate: none; }
+}
+
+
 /* ---------- Hero constellation ----------
    Built by js/main.js, so it never appears without the motion it implies.
    The three shapes are her own: a solid sparkle, an outlined one, and a
