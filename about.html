@@ -89,8 +89,14 @@
         </p>
 
         <div class="btn-row" style="margin-top:var(--s-3);">
-          <!-- Point this at assets/alejandra-uruena-resume.pdf once the file is in. -->
-          <a class="btn" href="#" download>Download resume</a>
+          <!-- PDF generado desde el HTML del CV con la tipografia Aleo incrustada
+               (SIL OFL), asi que no depende de Google Fonts ni de la conexion de
+               quien lo abra. `download` fuerza la descarga en vez de abrirlo en
+               una pestana, y su valor es el nombre con el que se guarda: eso es
+               lo que vera un reclutador en su carpeta, no "resume.pdf". -->
+          <a class="btn" href="assets/alejandra-uruena-resume.pdf"
+             download="Alejandra-Uruena-Technical-UX-UI-Designer.pdf"
+             type="application/pdf">Download resume</a>
         </div>
 
         <h3>Latest focus</h3>
