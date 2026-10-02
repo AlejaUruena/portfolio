@@ -393,6 +393,14 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
    and the letters vanish, leaving a plain square. */
 .i-webflow       { -webkit-mask-image: url('../assets/icons/webflow.svg');       mask-image: url('../assets/icons/webflow.svg'); }
 .i-blender       { -webkit-mask-image: url('../assets/icons/blender.svg');       mask-image: url('../assets/icons/blender.svg'); }
+/* Adobe, reduced to its letterforms. The shipped logos are "Ps"/"Ai"/"Pr"
+   knocked out of a solid tile, and a mask reads alpha — the tile is opaque,
+   so the letters disappear and all three become the same purple square.
+   These keep only the two letter paths from each file, which is what makes
+   them legible at 22px and consistent with the rest of the monochrome set. */
+.i-photoshop     { -webkit-mask-image: url('../assets/icons/photoshop-glyph.svg');   mask-image: url('../assets/icons/photoshop-glyph.svg'); }
+.i-illustrator   { -webkit-mask-image: url('../assets/icons/illustrator-glyph.svg'); mask-image: url('../assets/icons/illustrator-glyph.svg'); }
+.i-premiere      { -webkit-mask-image: url('../assets/icons/premiere-glyph.svg');    mask-image: url('../assets/icons/premiere-glyph.svg'); }
 
 /* ---------- Buttons (pill, from the Figma frame) ---------- */
 .btn-row { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-top: var(--s-4); }
@@ -474,6 +482,36 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
 }
 .p-row:hover .p-arrow, .p-row:focus-within .p-arrow { color: var(--accent); transform: translateX(4px); }
 
+/* "Read more" replaces the bare arrow on the rows that actually lead to a
+   written case study. Two rows have one today; the rest are still being
+   written, so their row is a plain div with no href and no affordance —
+   a card that looks clickable and goes nowhere is worse than a quiet one.
+   Everything else about those rows (hover copy, thumbnail, numbering) is
+   untouched, and their project pages and prev/next chain stay in place. */
+.p-more {
+  font-family: var(--font-label); font-size: 0.62rem;
+  letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap;
+  color: var(--accent);
+  border: 1px solid var(--accent-70); border-radius: 999px;
+  padding: 0.4rem 0.85rem;
+  transition: background 0.25s, border-color 0.25s, color 0.25s;
+}
+.p-more-arrow { display: inline-block; transition: transform 0.25s; }
+.p-row:hover .p-more, .p-row:focus-within .p-more {
+  background: var(--accent); border-color: var(--accent); color: var(--ink);
+}
+.p-row:hover .p-more-arrow, .p-row:focus-within .p-more-arrow { transform: translateX(3px); }
+
+/* A row with no case study behind it: no pointer, no colour shift, nothing
+   that reads as "click me". The hover background stays, because it is what
+   opens the copy and the thumbnail. */
+/* No `cursor` override here on purpose: the page runs a custom star cursor
+   via `.cursor-custom { cursor: none }` on <html>, and any cursor declared on
+   the row itself outranks that inheritance and brings the native arrow back.
+   The affordance is carried instead by the star, which only turns gold over
+   real links (js/main.js HOT = 'a, button, …'), and by the absent pill. */
+.p-row.is-static:hover .p-title, .p-row.is-static:focus-within .p-title { color: var(--text); }
+
 /* max-height rather than the grid-row trick: it animates in every browser
    shipping today, and a wrong guess here would hide content, not just skip
    an animation. */
@@ -526,6 +564,7 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
   .p-text { grid-column: 1; }
   .p-head { grid-template-columns: 2.2rem minmax(0, 1fr) auto; padding-bottom: var(--s-2); }
   .p-arrow { display: none; }
+  .p-more { grid-column: 2; justify-self: start; margin-top: var(--s-1); }
   .p-media video.thumb-motion { display: none; }
 }
 
@@ -547,6 +586,7 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
   .p-head { grid-template-columns: var(--p-gutter) minmax(0, max-content) 1fr; }
   .p-kind { display: none; }
   .p-arrow { grid-column: 3; justify-self: start; }
+  .p-more { grid-column: 3; justify-self: start; align-self: center; }
 
   /* The row itself becomes the grid. Title and copy stack in column 1; the
      thumbnail takes column 2 and spans both rows, so its top edge lines up

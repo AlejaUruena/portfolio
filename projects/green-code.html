@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- TEMPORARY: keeps search engines out while the rest of the site is still in
+     placeholders. DELETE this line once the About copy and the case studies are written. -->
+<meta name="robots" content="noindex">
+
+<title>Green Code: Play &amp; Learn · Alejandra Urueña</title>
+<meta name="description" content="Designing a level editor for a game that teaches programming: UX flows, mechanic redesign and prototyping for Green Code.">
+<meta property="og:title" content="Green Code: Play &amp; Learn">
+<meta property="og:description" content="Designing a level editor for a game that teaches programming.">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="icon" href="../favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/png" href="../assets/cursor/icon-180.png" sizes="180x180">
+<link rel="apple-touch-icon" href="../assets/cursor/apple-touch-icon.png">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="../index.html">
+      <span class="nav-name">Alejandra&nbsp;Urueña</span>
+      <span class="nav-role">Technical UX/UI Designer</span>
+    </a>
+    <div class="nav-right">
+      <button class="nav-toggle" type="button" hidden
+              aria-expanded="false" aria-controls="nav-menu" aria-label="Open menu">
+        <span class="nav-toggle-bars" aria-hidden="true"></span>
+      </button>
+      <ul class="nav-links" id="nav-menu">
+        <li><a href="../index.html#work">Work</a></li>
+        <li><a href="../about.html">About</a></li>
+        <li><a href="../index.html#contact">Contact</a></li>
+      </ul>
+      <div class="lang-switch" hidden>
+        <span aria-current="true">EN</span>
+        <a href="../es/projects/green-code.html" hreflang="es">ES</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main id="main"
+      data-prev="guitar-hero-iii.html" data-prev-title="Guitar Hero III"
+      data-next="guitar-hero-iii.html" data-next-title="Guitar Hero III">
+
+<header class="project-header">
+  <div class="wrap">
+    <a class="back-link" href="../index.html?v=games#work">← Back to work</a>
+    <h1 style="margin-top:1rem;">Green Code: Play &amp; Learn</h1>
+    <p class="pitch" style="font-size:1.1rem;color:var(--text-dim);max-width:60ch;">
+      Designing a level editor for a game that teaches programming.
+    </p>
+
+    <div class="project-meta">
+      <div><span class="k">Contribution</span><span class="v">UX &amp; Game Design</span></div>
+      <div><span class="k">Studio</span><span class="v">Dreams Uncorporated</span></div>
+      <div><span class="k">Scope</span><span class="v">UX flows · mechanic design · prototyping · UX writing</span></div>
+      <div><span class="k">Platforms</span><span class="v">Mobile, desktop and web</span></div>
+    </div>
+
+    <p class="disclaimer">
+      UI art and iconography were produced by a separate department.
+      Published with the studio's permission.
+    </p>
+  </div>
+</header>
+
+<section style="border-top:none;padding-top:0;">
+  <div class="wrap">
+    <div class="prose">
+
+      <h2>Context</h2>
+      <p>
+        Green Code is a cross-platform app that teaches programming fundamentals through play,
+        framed around environmental themes. Players solve challenges by chaining actions into a
+        sequence of action blocks, by decomposing a task into smaller ones, or by finding an
+        error in a block sequence.
+      </p>
+      <p>
+        I was brought in to test and improve the user experience design of a level editor, which
+        came with the opportunity to fix some mechanics that the editor's logic broke.
+      </p>
+
+      <h2>The player becomes the author</h2>
+      <p>
+        An important insight I got while testing was that, until the editor, the player had to
+        solve pre-designed challenges with static written instructions. Now, the same player who
+        becomes a level creator has to make their own instructions and grids, and make sure the
+        challenge is solvable for other players by solving it themselves first.
+      </p>
+      <p>
+        This called for a task to reverse-engineer the experience, where the design approach was
+        finding the best way to give the player a usable and diverse level toolset — with all
+        game attributes, hazards and action blocks — to create with.
+      </p>
+
+      <h2>Design decisions</h2>
+      <p>
+        After analysing the initial state of the editor with a user journey, a few decisions were
+        made, prototyped, pitched and deployed:
+      </p>
+      <ul>
+        <li>
+          <strong>An icon-based, categorised, collapsible inventory</strong>, which replaced a
+          long scrollable list of more than a hundred items. Linear searching became efficient
+          searching. This shipped for the action blocks; the hazard inventory iterated to a
+          second solution and eventually shipped as a text-only dropdown.
+        </li>
+        <li>
+          <strong>A delete-whole-answer button</strong>, because clearing a long answer tile by
+          tile punishes the experimentation an editor exists to encourage. This was implemented
+          and adopted across the whole game.
+        </li>
+        <li>
+          <strong>Personalisation settings selected by the level creator</strong> — categorised
+          by ecosystem, by difficulty (basic to advanced action blocks), by creative or realistic
+          mode, and by algorithmic or decomposing — so players picked their tools beforehand,
+          solving saturation from the start.
+        </li>
+        <li>
+          <strong>Grid pinpoints for the action requirement inventory</strong>, so the level
+          creator could select and see where their required block actions sat on the grid instead
+          of re-reading the generated instructions on every edit. This also let players solve the
+          same created challenge with different answers, since the action requirements didn't
+          call for a mandatory order.
+        </li>
+      </ul>
+      <p>
+        Other proposals were set aside to get the editor shipped. They are still in the user
+        flows. The art department made the final art and icons for the UI.
+      </p>
+
+      <figure>
+        <div class="figure-empty">[ editor inventory — before / after — 1600×900 ]</div>
+        <figcaption>The action block inventory: scrollable list versus categorised, collapsible grid.</figcaption>
+      </figure>
+
+      <h2>Game design tasks</h2>
+      <p>
+        Since the original levels had previously written instructions, we created a system where
+        each required action block carries a phrase, and the blocks a level creator picks
+        concatenate into the instruction the next player reads. I wrote that system so it would
+        hold for any combination.
+      </p>
+
+      <h3>Redesigning a game mechanic</h3>
+      <p>
+        During development, the clients came with a new dilemma: an existing mechanic stopped
+        making sense. The action block <em>Plant</em> had been designed for levels with fixed
+        crops, and for the level editor the crops were replaced with one soil block and one water
+        block. After reviewing the user journey and the as-is / to-be flows, I realised that the
+        level creator had to learn how to use <em>Plant</em> all over again, without a context.
+      </p>
+      <p>
+        To ease that confusion I created a crop selection system, grouped by crop family, crop
+        type and ecosystem, making sure the editor opened to every crop the player was already
+        familiar with. After a few rounds with the client to settle which groups shipped, the
+        first part was ready.
+      </p>
+
+      <h3>Making it fun</h3>
+      <p>
+        Harder levels needed to explore different challenges. Following the plant redesign, on
+        medium and hard levels I added units per crop to the action requirements, to encourage
+        level creators to use loops in their algorithmic levels and make them more challenging
+        for other players.
+      </p>
+      <p>
+        Once those changes were in, I refined production's new scoring base for player-created
+        levels into a system weighting answer match, length, response time, attempts and level
+        difficulty. That score feeds a leaderboard where players see the global and regional top
+        scores for the levels they solved, created by other players.
+      </p>
+      <p>
+        Finally, once everything in the level editor worked, I authored a set of levels made with
+        the editor for a <em>Recommended levels</em> tab, so level creators learn the tool's range
+        by playing rather than by reading.
+      </p>
+
+      <figure>
+        <div class="figure-empty">[ crop selection system — 1600×900 ]</div>
+        <figcaption>Crop selection grouped by family, type and ecosystem.</figcaption>
+      </figure>
+
+      <h2>Learning from the player, and helping the player learn</h2>
+      <p>
+        This project was a great way to explore how to give users as much freedom as possible and
+        still keep the experience immersive and easy to use. I enjoyed working with the
+        development team and the client to make it better and more memorable — I even had the
+        opportunity to talk about our work live.
+      </p>
+      <p>
+        What I take from it is to always prioritise the user's mind and capability, keeping their
+        intuition and knowledge on hand to tailor designs they not only need but also enjoy.
+      </p>
+
+      <nav class="case-nav" aria-label="Continue reading">
+        <a class="btn btn-primary" href="guitar-hero-iii.html">Next project → Guitar Hero III</a>
+        <a class="btn" href="../index.html#work">Go to Digital Product</a>
+      </nav>
+
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <ul class="social social-sm">
+      <li><a class="icon-link" href="https://www.linkedin.com/in/aleja-uruena/" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><i class="i-linkedin" aria-hidden="true"></i></a></li>
+      <li><a class="icon-link" href="mailto:uruenale@gmail.com" aria-label="Email" title="uruenale@gmail.com"><i class="i-mail" aria-hidden="true"></i></a></li>
+      <li><a class="icon-link" href="https://github.com/AlejaUruena" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub"><i class="i-github" aria-hidden="true"></i></a></li>
+    </ul>
+    <span class="copyright">© <span id="year">2026</span> Alejandra Urueña</span>
+  </div>
+</footer>
+
+<script src="../js/vendor/lenis.min.js"></script>
+<script src="../js/main.js"></script>
+</body>
+</html>
