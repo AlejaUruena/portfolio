@@ -59,9 +59,12 @@
   </div>
 </nav>
 
-<main id="main"
-      data-prev="guitar-hero-iii.html" data-prev-title="Guitar Hero III"
-      data-next="guitar-hero-iii.html" data-next-title="Guitar Hero III">
+<!-- Sin data-prev / data-next a proposito: con un solo case study activo no hay
+     proyecto anterior ni siguiente, y js/main.js solo monta el swipe y las flechas
+     si existe main[data-next]. Al reactivar Guitar Hero, devolver aqui:
+       data-prev="guitar-hero-iii.html" data-prev-title="Guitar Hero III"
+       data-next="guitar-hero-iii.html" data-next-title="Guitar Hero III" -->
+<main id="main">
 
 <header class="project-header">
   <div class="wrap">
@@ -214,8 +217,8 @@
         intuition and knowledge on hand to tailor designs they not only need but also enjoy.
       </p>
 
-      <nav class="case-nav" aria-label="Continue reading">
-        <a class="btn btn-primary" href="guitar-hero-iii.html">Next project → Guitar Hero III</a>
+      <nav class="case-nav" aria-label="Keep browsing">
+        <a class="btn btn-primary" href="../index.html?v=games#work">← Back to Games</a>
         <a class="btn" href="../index.html#work">Go to Digital Product</a>
       </nav>
 

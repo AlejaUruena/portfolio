@@ -89,13 +89,24 @@
         </p>
 
         <div class="btn-row" style="margin-top:var(--s-3);">
-          <!-- PDF generado desde el HTML del CV con la tipografia Aleo incrustada
-               (SIL OFL), asi que no depende de Google Fonts ni de la conexion de
-               quien lo abra. `download` fuerza la descarga en vez de abrirlo en
-               una pestana, y su valor es el nombre con el que se guarda: eso es
-               lo que vera un reclutador en su carpeta, no "resume.pdf". -->
-          <a class="btn" href="assets/alejandra-uruena-resume.pdf"
-             download="Alejandra-Uruena-Technical-UX-UI-Designer.pdf"
+          <!-- PDF generado desde el HTML del CV, con Aleo incrustada (SIL OFL):
+               no depende de Google Fonts ni de la conexion de quien lo abra.
+               Una sola pagina, los tres enlaces del encabezado vivos y el texto
+               extraible, para que un ATS pueda leerlo.
+
+               El nombre es el que eligio Aleja, con la unica excepcion de la
+               ñ -> n: Chrome descarta el valor entero de `download` si contiene
+               un caracter no ASCII y guarda el archivo como "download", sin
+               extension. Medido: con ñ -> "download"; sin ñ -> el nombre
+               completo. Sin espacios ni acentos, el href no necesita ninguna
+               codificacion y coincide exactamente con el nombre descargado.
+
+               `download` ademas fuerza la descarga en vez de abrir el PDF en una
+               pestaña. El CV en español esta al lado, en
+               assets/CV_AlejandraUruena_Tech_UXUI_Designer_es.pdf, sin enlazar:
+               se publicara cuando exista la version /es/ del sitio. -->
+          <a class="btn" href="assets/CV_AlejandraUruena_Tech_UXUI_Designer.pdf"
+             download="CV_AlejandraUruena_Tech_UXUI_Designer.pdf"
              type="application/pdf">Download resume</a>
         </div>
 
