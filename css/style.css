@@ -191,6 +191,16 @@ section { padding: var(--s-6) 0; border-top: 1px solid var(--purple-soft); }
 .lang-switch [aria-current="true"] { background: var(--purple); color: var(--text); }
 .lang-switch a:hover { color: var(--text); text-decoration: none; }
 
+/* En movil el conmutador va a la IZQUIERDA de la hamburguesa. En el marcado
+   viene despues (el orden del DOM pone primero el boton, que es lo correcto
+   para un lector de pantalla: primero el control que abre el menu), asi que
+   aqui solo se invierte el orden visual con `order`. Cambiar el orden del
+   marcado en su lugar moveria tambien el orden de tabulacion. */
+@media (max-width: 760px) {
+  .lang-switch { order: -1; }
+  .nav-right { align-items: center; }
+}
+
 @media (max-width: 760px) {
   .nav-inner { padding: var(--s-2); }
   .nav-right { gap: var(--s-2); min-width: 0; }

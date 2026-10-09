@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Content Security Policy. GitHub Pages cannot send HTTP headers, so this
+     is delivered as a meta tag. It is defence in depth, not a fix for a known
+     hole: the site has no inline <script> and no on* handlers, which is what
+     makes a strict script-src 'self' possible at all. Effect: no third-party
+     script can execute, and the contact form can only post to Web3Forms.
+     'unsafe-inline' is needed for style only, because of the inline style=
+     attributes still in the markup; it does not weaken script-src.
+     NOTE: frame-ancestors is deliberately absent — browsers ignore it when
+     CSP arrives in a meta tag, so writing it here would be decoration.
+     If you add a new external host (a captcha, an embed, a font CDN), add it
+     to the matching directive here in EVERY page or it will be blocked. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; connect-src 'self' https://api.web3forms.com; form-action 'self' https://api.web3forms.com; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
+
+<!-- TEMPORARY: keeps search engines out while the case studies are still being written.
+     DELETE this line once the project pages are done. -->
+<meta name="robots" content="noindex">
+
+<!-- The h1 is a greeting, so the descriptive line lives here, where search
+     results and link previews read it. -->
+<title>About — Alejandra Urueña</title>
+<meta name="description" content="Interaction designer in Bogotá, Colombia. Background in game development, web building and QA testing, now designing interfaces.">
+
+<meta property="og:title" content="About — Alejandra Urueña">
+<meta property="og:description" content="Interaction designer in Bogotá, Colombia.">
+<meta property="og:type" content="website">
+<!-- <meta property="og:image" content="https://alejauruena.github.io/portfolio/assets/og-image.png"> -->
+
+<link rel="stylesheet" href="../css/style.css">
+<link rel="icon" href="../favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/png" href="../assets/cursor/icon-180.png" sizes="180x180">
+<link rel="apple-touch-icon" href="../assets/cursor/apple-touch-icon.png">
+
+<link rel="alternate" hreflang="en" href="https://alejauruena.github.io/portfolio/about.html">
+<link rel="alternate" hreflang="es" href="https://alejauruena.github.io/portfolio/es/about.html">
+<link rel="alternate" hreflang="x-default" href="https://alejauruena.github.io/portfolio/about.html">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Saltar al contenido</a>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html">
+      <span class="nav-name">Alejandra&nbsp;Urueña</span>
+      <span class="nav-role">Technical UX/UI Designer</span>
+    </a>
+    <div class="nav-right">
+      <!-- Present in the markup but hidden: js/main.js unhides it and only
+           then switches the list into a panel. Without JS the three links
+           stay visible, so the nav can never end up unreachable. -->
+      <button class="nav-toggle" type="button" hidden
+              aria-expanded="false" aria-controls="nav-menu" aria-label="Open menu">
+        <span class="nav-toggle-bars" aria-hidden="true"></span>
+      </button>
+      <ul class="nav-links" id="nav-menu">
+        <li><a href="index.html#work">Proyectos</a></li>
+        <li><a href="about.html" aria-current="page">About</a></li>
+        <li><a href="index.html#contact">Contacto</a></li>
+        <!-- ART goes here once the section exists. A menu item that leads
+             nowhere is worse than no menu item. -->
+      </ul>
+      <!-- Language switch. /es/ ya existe: el enlace ES lleva a la misma pagina traducida. -->
+      <div class="lang-switch">
+        <a href="../about.html" hreflang="en">EN</a>
+        <span aria-current="true">ES</span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main id="main" class="page-about">
+<section data-cascade=".section-title, .prose > *, .skills > *">
+  <div class="wrap">
+    <h2 class="section-title">Sobre mí</h2>
+
+    <div class="two-col">
+      <div class="prose">
+        <p>
+          Vivo en Bogotá, Colombia, donde me gradué de Diseño Interactivo.
+        </p>
+        <p>
+          He trabajado profesionalmente en desarrollo de videojuegos, construcción web y QA,
+          lo que afinó mi lectura de la psicología del usuario y del jugador. Hoy llevo
+          ese mismo criterio al diseño de interfaces, priorizando la funcionalidad sin
+          renunciar a una identidad visual fuerte.
+        </p>
+
+        <div class="btn-row" style="margin-top:var(--s-3);">
+          <!-- PDF generado desde el HTML del CV, con Aleo incrustada (SIL OFL):
+               no depende de Google Fonts ni de la conexion de quien lo abra.
+               Una sola pagina, los tres enlaces del encabezado vivos y el texto
+               extraible, para que un ATS pueda leerlo.
+
+               El nombre es el que eligio Aleja, con la unica excepcion de la
+               ñ -> n: Chrome descarta el valor entero de `download` si contiene
+               un caracter no ASCII y guarda el archivo como "download", sin
+               extension. Medido: con ñ -> "download"; sin ñ -> el nombre
+               completo. Sin espacios ni acentos, el href no necesita ninguna
+               codificacion y coincide exactamente con el nombre descargado.
+
+               `download` ademas fuerza la descarga en vez de abrir el PDF en una
+               pestaña. El CV en español esta al lado, en
+               assets/CV_AlejandraUruena_Tech_UXUI_Designer_es.pdf, sin enlazar:
+               se publicara cuando exista la version /es/ del sitio. -->
+          <a class="btn" href="../assets/CV_AlejandraUruena_Tech_UXUI_Designer_es.pdf"
+             download="CV_AlejandraUruena_Tech_UXUI_Designer_es.pdf"
+             type="application/pdf">Descargar CV</a>
+        </div>
+
+        <h3>En lo que ando ahora</h3>
+        <p>
+          Tengo una mirada abierta a la integración de IA y estoy explorando buenas prácticas
+          para usarla en flujos de implementación y automatización de pipeline.
+        </p>
+
+        <!-- A native disclosure: keyboard-operable and works with JS disabled. -->
+        <details class="fun-facts">
+          <summary>¡Algunos datos sueltos sobre mí!</summary>
+          <p>
+            Fuera del trabajo me gusta tocar batería, jugar, sobreanalizar películas y hacer
+            arte y proyectos DIY.
+          </p>
+          <p>Casi siempre me encuentras en alguna game jam.</p>
+          <p>Me gusta mucho la edición de video y el fanart…</p>
+        </details>
+      </div>
+
+      <div class="skills">
+        <h3>Habilidades de diseño</h3>
+        <ul class="chip-list">
+          <li>User flows</li>
+          <li>Arquitectura de información</li>
+          <li>Wireframes</li>
+          <li>Prototipado</li>
+          <li>Sistemas de diseño</li>
+          <li>UX Writing</li>
+          <li>Ilustración</li>
+        </ul>
+
+        <h3>Herramientas y tecnologías</h3>
+        <!-- Two rows on purpose: what she builds interfaces WITH on the first,
+             what she produces assets with on the second. The order inside each
+             row is hers, not alphabetical — it leads with the tools the
+             Technical Designer pitch rests on. -->
+        <ul class="chip-list">
+          <li><i class="i-figma" aria-hidden="true"></i>Figma</li>
+          <li><i class="i-unity" aria-hidden="true"></i>Unity</li>
+          <li><i class="i-unreal" aria-hidden="true"></i>Unreal Engine</li>
+          <li>HTML/CSS</li>
+          <li><i class="i-webflow" aria-hidden="true"></i>Webflow</li>
+          <li>WixStudio</li>
+        </ul>
+        <ul class="chip-list">
+          <li><i class="i-photoshop" aria-hidden="true"></i>Photoshop</li>
+          <li><i class="i-illustrator" aria-hidden="true"></i>Illustrator</li>
+          <li><i class="i-premiere" aria-hidden="true"></i>Premiere Pro</li>
+          <li>Clip Studio</li>
+          <li><i class="i-blender" aria-hidden="true"></i>Blender</li>
+          <li><i class="i-atlassian" aria-hidden="true"></i>Jira / Trello</li>
+        </ul>
+
+        <h3>Idiomas</h3>
+        <ul class="chip-list">
+          <li>Español &mdash; Nativo</li>
+          <li>Inglés &mdash; C1</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <ul class="social social-sm">
+      <li><a class="icon-link" href="https://www.linkedin.com/in/aleja-uruena/" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><i class="i-linkedin" aria-hidden="true"></i></a></li>
+      <li><a class="icon-link js-copy-mail" href="mailto:uruenale@gmail.com" data-copy="uruenale@gmail.com" aria-label="Email — click to copy the address" title="uruenale@gmail.com"><i class="i-mail" aria-hidden="true"></i><span class="copy-toast" role="status" aria-live="polite"></span></a></li>
+      <li><a class="icon-link" href="https://github.com/AlejaUruena" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub"><i class="i-github" aria-hidden="true"></i></a></li>
+    </ul>
+    <span class="copyright">© <span id="year">2026</span> Alejandra Urueña</span>
+  </div>
+</footer>
+
+<script src="../js/vendor/lenis.min.js"></script>
+<script src="../js/main.js"></script>
+</body>
+</html>

@@ -1,6 +1,46 @@
 /* Portfolio — minimal JS.
    Structure lives in HTML/CSS. This only handles what can't be static. */
 
+/* ---------------------------------------------------------------------------
+   Textos de interfaz, por idioma.
+
+   El sitio sirve dos arboles de paginas reales (raiz en ingles, /es/ en
+   espanol) y UN solo main.js. Estas son las unicas cadenas que el script
+   escribe en pantalla, asi que viven aqui en vez de repartidas por el codigo.
+   La clave sale de <html lang>, que cada pagina ya declara; si llega un
+   idioma desconocido se cae a ingles en vez de quedarse sin texto.
+
+   Vive FUERA de los IIFE a proposito: main.js son diez bloques aislados y
+   varios de ellos escriben texto, asi que dentro de uno solo los demas no lo
+   verian. Nombre largo y distintivo para no chocar con nada global.
+   --------------------------------------------------------------------------- */
+var I18N = (function () {
+  var textos = {
+    en: {
+      abrirMenu: 'Open menu',      cerrarMenu: 'Close menu',
+      formSinClave: 'The form is not connected yet — please use the email icon below.',
+      formInvalido: 'Please fill in your name, a valid email and a message.',
+      formEnviando: 'Sending\u2026',
+      formOk:       'Thanks \u2014 your message is on its way.',
+      formError:    'Something went wrong. You can email me directly instead.',
+      copiado:      'Copied!',
+      anterior:     'Previous project', siguiente: 'Next project'
+    },
+    es: {
+      abrirMenu: 'Abrir menú',     cerrarMenu: 'Cerrar menú',
+      formSinClave: 'El formulario aún no está conectado — escríbeme con el icono de correo de abajo.',
+      formInvalido: 'Completa tu nombre, un correo válido y un mensaje.',
+      formEnviando: 'Enviando\u2026',
+      formOk:       'Gracias \u2014 tu mensaje va en camino.',
+      formError:    'Algo salió mal. Puedes escribirme directamente al correo.',
+      copiado:      '¡Copiado!',
+      anterior:     'Proyecto anterior', siguiente: 'Proyecto siguiente'
+    }
+  };
+  var lang = (document.documentElement.lang || 'en').slice(0, 2).toLowerCase();
+  return textos[lang] || textos.en;
+})();
+
 (function () {
   'use strict';
 
@@ -419,7 +459,7 @@
 
   function setOpen(open) {
     btn.setAttribute('aria-expanded', String(open));
-    btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    btn.setAttribute('aria-label', open ? I18N.cerrarMenu : I18N.abrirMenu);
     menu.classList.toggle('is-open', open);
   }
   function isOpen() { return btn.getAttribute('aria-expanded') === 'true'; }
@@ -479,20 +519,20 @@
 
     // No key pasted in yet: say so rather than posting and pretending.
     if (!key || !key.value.trim()) {
-      say('The form is not connected yet — please use the email icon below.', 'err');
+      say(I18N.formSinClave, 'err');
       return;
     }
 
     // `novalidate` silences the browser's own bubbles so the message can live
     // in the page, but the constraints themselves still apply.
     if (!form.checkValidity()) {
-      say('Please fill in your name, a valid email and a message.', 'err');
+      say(I18N.formInvalido, 'err');
       form.reportValidity();
       return;
     }
 
     button.disabled = true;
-    say('Sending\u2026');
+    say(I18N.formEnviando);
 
     fetch(form.getAttribute('action'), {
       method: 'POST',
@@ -505,10 +545,10 @@
         // not proof it went through, so the flag is what gets checked.
         if (!data.success) throw new Error(data.message || 'failed');
         form.reset();
-        say('Thanks \u2014 your message is on its way.', 'ok');
+        say(I18N.formOk, 'ok');
       })
       .catch(function () {
-        say('Something went wrong. You can email me directly instead.', 'err');
+        say(I18N.formError, 'err');
       })
       .then(function () { button.disabled = false; });
   });
@@ -542,7 +582,7 @@
     if (!navigator.clipboard) return;   // no API: fall through to mailto:
     e.preventDefault();
     navigator.clipboard.writeText(addr)
-      .then(function () { flash('Copied!'); })
+      .then(function () { flash(I18N.copiado); })
       // Clipboard writes are refused outside a secure context (file:// or
       // plain http), so say what happened instead of failing silently.
       .catch(function () { flash('Press Ctrl+C'); });
@@ -591,8 +631,8 @@
     hints.push(a);
   }
 
-  addHint('prev', prev, 'Previous project', 'M15 18l-6-6 6-6');
-  addHint('next', next, 'Next project',     'M9 18l6-6-6-6');
+  addHint('prev', prev, I18N.anterior, 'M15 18l-6-6 6-6');
+  addHint('next', next, I18N.siguiente,  'M9 18l6-6-6-6');
   if (!hints.length) return;
 
   var caseNav = document.querySelector('.case-nav');

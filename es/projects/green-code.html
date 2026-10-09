@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Content Security Policy. GitHub Pages cannot send HTTP headers, so this
+     is delivered as a meta tag. It is defence in depth, not a fix for a known
+     hole: the site has no inline <script> and no on* handlers, which is what
+     makes a strict script-src 'self' possible at all. Effect: no third-party
+     script can execute, and the contact form can only post to Web3Forms.
+     'unsafe-inline' is needed for style only, because of the inline style=
+     attributes still in the markup; it does not weaken script-src.
+     NOTE: frame-ancestors is deliberately absent — browsers ignore it when
+     CSP arrives in a meta tag, so writing it here would be decoration.
+     If you add a new external host (a captcha, an embed, a font CDN), add it
+     to the matching directive here in EVERY page or it will be blocked. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; connect-src 'self' https://api.web3forms.com; form-action 'self' https://api.web3forms.com; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
+
+<!-- TEMPORARY: keeps search engines out while the rest of the site is still in
+     placeholders. DELETE this line once the About copy and the case studies are written. -->
+<meta name="robots" content="noindex">
+
+<title>Green Code: Play &amp; Learn · Alejandra Urueña</title>
+<meta name="description" content="Designing a level editor for a game that teaches programming: User flows, mechanic redesign and prototyping for Green Code.">
+<meta property="og:title" content="Green Code: Play &amp; Learn">
+<meta property="og:description" content="Diseñar un editor de niveles para un juego que enseña a programar.">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="../../css/style.css">
+<link rel="icon" href="../../favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/png" href="../../assets/cursor/icon-180.png" sizes="180x180">
+<link rel="apple-touch-icon" href="../../assets/cursor/apple-touch-icon.png">
+
+<link rel="alternate" hreflang="en" href="https://alejauruena.github.io/portfolio/projects/green-code.html">
+<link rel="alternate" hreflang="es" href="https://alejauruena.github.io/portfolio/es/projects/green-code.html">
+<link rel="alternate" hreflang="x-default" href="https://alejauruena.github.io/portfolio/projects/green-code.html">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Saltar al contenido</a>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="../index.html">
+      <span class="nav-name">Alejandra&nbsp;Urueña</span>
+      <span class="nav-role">Technical UX/UI Designer</span>
+    </a>
+    <div class="nav-right">
+      <button class="nav-toggle" type="button" hidden
+              aria-expanded="false" aria-controls="nav-menu" aria-label="Open menu">
+        <span class="nav-toggle-bars" aria-hidden="true"></span>
+      </button>
+      <ul class="nav-links" id="nav-menu">
+        <li><a href="../index.html#work">Proyectos</a></li>
+        <li><a href="../about.html">Sobre mí</a></li>
+        <li><a href="../index.html#contact">Contacto</a></li>
+      </ul>
+      <div class="lang-switch">
+        <a href="../../projects/green-code.html" hreflang="en">EN</a>
+        <span aria-current="true">ES</span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Sin data-prev / data-next a proposito: con un solo case study activo no hay
+     proyecto anterior ni siguiente, y js/main.js solo monta el swipe y las flechas
+     si existe main[data-next]. Al reactivar Guitar Hero, devolver aqui:
+       data-prev="guitar-hero-iii.html" data-prev-title="Guitar Hero III"
+       data-next="guitar-hero-iii.html" data-next-title="Guitar Hero III" -->
+<main id="main">
+
+<header class="project-header">
+  <div class="wrap">
+    <a class="back-link" href="../index.html?v=games#work">← Volver a proyectos</a>
+    <h1 style="margin-top:1rem;">Green Code: Play &amp; Learn</h1>
+    <p class="pitch" style="font-size:1.1rem;color:var(--text-dim);max-width:60ch;">
+      Diseñar un editor de niveles para un juego que enseña a programar.
+    </p>
+
+    <div class="project-meta">
+      <div><span class="k">Aporte</span><span class="v">UX &amp; Game Design</span></div>
+      <div><span class="k">Estudio</span><span class="v">Dreams Uncorporated</span></div>
+      <div><span class="k">Alcance</span><span class="v">User flows · mechanic design · prototyping · UX writing</span></div>
+      <div><span class="k">Plataformas</span><span class="v">Móvil, escritorio y web</span></div>
+    </div>
+
+    <p class="disclaimer">
+      El UI art y la iconografía los produjo otro departamento.
+      Publicado con permiso del estudio.
+    </p>
+  </div>
+</header>
+
+<section style="border-top:none;padding-top:0;">
+  <div class="wrap">
+    <div class="prose">
+
+      <h2>Contexto</h2>
+      <p>
+        Green Code es una app multiplataforma que enseña fundamentos de programación jugando,
+        con una temática ambiental. Quien juega resuelve retos encadenando acciones en una
+        secuencia de bloques, descomponiendo una tarea en otras más pequeñas, o encontrando
+        el error dentro de una secuencia.
+      </p>
+      <p>
+        Entré a probar y mejorar el diseño de experiencia de un editor de niveles, y eso trajo
+        de paso la oportunidad de arreglar algunas mecánicas que la lógica del editor rompía.
+      </p>
+
+      <h2>Quien juega pasa a ser quien crea</h2>
+      <p>
+        Un hallazgo importante de las pruebas fue que, hasta el editor, quien jugaba resolvía
+        retos ya diseñados con instrucciones escritas fijas. Ahora esa misma persona, al crear
+        un nivel, tiene que escribir sus propias instrucciones, armar la grilla y asegurarse de
+        que el reto sea resoluble para los demás resolviéndolo ella primero.
+      </p>
+      <p>
+        Eso obligó a hacer ingeniería inversa de la experiencia: el enfoque de diseño fue
+        encontrar la mejor forma de entregar un kit de creación usable y variado, con todos los
+        atributos del juego, los peligros y los bloques de acción.
+      </p>
+
+      <h2>Decisiones de diseño</h2>
+      <p>
+        Tras analizar el estado inicial del editor con un user journey, se tomaron, prototiparon,
+        presentaron y desplegaron varias decisiones:
+      </p>
+      <ul>
+        <li>
+          <strong>Un inventario por iconos, categorizado y plegable</strong>, que reemplazó una
+          lista scrolleable de más de cien elementos. La búsqueda lineal pasó a ser búsqueda
+          eficiente. Se implementó para los bloques de acción; el inventario de peligros iteró
+          a una segunda solución y terminó saliendo como un desplegable de solo texto.
+        </li>
+        <li>
+          <strong>Un botón para borrar la respuesta completa</strong>, porque limpiar una
+          respuesta larga ficha por ficha castiga justo la experimentación que un editor existe
+          para fomentar. Se implementó y se adoptó en todo el juego.
+        </li>
+        <li>
+          <strong>Ajustes de personalización que elige quien crea el nivel</strong>: por
+          ecosistema, por dificultad (de bloques básicos a avanzados), por modo creativo o
+          realista, y por algorítmico o de descomposición. Así se eligen las herramientas desde
+          el principio y se resuelve la saturación de entrada.
+        </li>
+        <li>
+          <strong>Marcadores en la grilla para el inventario de acciones requeridas</strong>, para
+          poder seleccionar y ver dónde quedan las acciones exigidas sin releer las instrucciones
+          generadas en cada edición. Esto además permitió resolver un mismo reto con respuestas
+          distintas, porque las acciones requeridas no exigían un orden obligatorio.
+        </li>
+      </ul>
+      <p>
+        Otras propuestas se dejaron de lado para sacar el editor a tiempo; siguen en los user
+        flows. El arte y los iconos finales de la UI los hizo el departamento de arte.
+      </p>
+
+      <figure>
+        <div class="figure-empty">[ inventario del editor — antes / después — 1600×900 ]</div>
+        <figcaption>El inventario de bloques de acción: lista scrolleable contra grilla categorizada y plegable.</figcaption>
+      </figure>
+
+      <h2>Tareas de game design</h2>
+      <p>
+        Como los niveles originales tenían instrucciones escritas de antemano, creamos un sistema
+        donde cada bloque de acción requerido carga una frase, y los bloques que elige quien crea
+        el nivel se concatenan en la instrucción que leerá la siguiente persona. Escribí ese
+        sistema para que funcionara con cualquier combinación.
+      </p>
+
+      <h3>Rediseñar una mecánica</h3>
+      <p>
+        Durante el desarrollo, el cliente llegó con un dilema nuevo: una mecánica existente dejó
+        de tener sentido. El bloque <em>Plantar</em> se había diseñado para niveles con cultivos
+        fijos, y en el editor los cultivos se reemplazaron por un bloque de tierra y uno de agua.
+        Tras revisar el user journey y los flujos as-is / to-be, vi que quien creaba un nivel
+        tenía que volver a aprender a usar <em>Plantar</em>, y sin contexto.
+      </p>
+      <p>
+        Para resolver esa confusión creé un sistema de selección de cultivos, agrupado por familia,
+        tipo y ecosistema, asegurando que el editor abriera con todos los cultivos que ya le eran
+        familiares a quien jugaba. Tras varias rondas con el cliente para fijar qué grupos salían,
+        la primera parte quedó lista.
+      </p>
+
+      <h3>Que además sea divertido</h3>
+      <p>
+        Los niveles difíciles necesitaban explorar retos distintos. Después del rediseño de
+        plantar, en los niveles medio y difícil añadí unidades por cultivo a las acciones
+        requeridas, para incentivar el uso de bucles en los niveles algorítmicos y hacerlos más
+        retadores para los demás.
+      </p>
+      <p>
+        Con esos cambios dentro, refiné la base de puntaje que producción propuso para los niveles
+        creados por jugadores, convirtiéndola en un sistema que pondera coincidencia de la
+        respuesta, longitud, tiempo, intentos y dificultad. Ese puntaje alimenta un leaderboard
+        con los mejores resultados globales y regionales de los niveles resueltos.
+      </p>
+      <p>
+        Finally, once everything in the level editor worked, I authored a set of levels made with
+        the editor for a <em>Recommended levels</em> tab, so level creators learn the tool's range
+        by playing rather than by reading.
+      </p>
+
+      <figure>
+        <div class="figure-empty">[ sistema de selección de cultivos — 1600×900 ]</div>
+        <figcaption>Selección de cultivos agrupada por familia, tipo y ecosistema.</figcaption>
+      </figure>
+
+      <h2>Aprender de quien juega, y ayudarle a aprender</h2>
+      <p>
+        Este proyecto fue una gran forma de explorar cómo dar la mayor libertad posible sin perder
+        inmersión ni facilidad de uso. Disfruté trabajar con el equipo de desarrollo y con el
+        cliente para hacerlo mejor y más memorable; incluso tuve la oportunidad de hablar de
+        nuestro trabajo en vivo.
+      </p>
+      <p>
+        Me llevo la idea de priorizar siempre la mente y la capacidad de quien usa el producto,
+        teniendo su intuición y su conocimiento a mano para diseñar algo que no solo necesite,
+        sino que además disfrute.
+      </p>
+
+      <nav class="case-nav" aria-label="Seguir navegando">
+        <a class="btn btn-primary" href="../index.html?v=games#work">← Volver a Videojuegos</a>
+        <a class="btn" href="../index.html#work">Ir a Producto Digital</a>
+      </nav>
+
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <ul class="social social-sm">
+      <li><a class="icon-link" href="https://www.linkedin.com/in/aleja-uruena/" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><i class="i-linkedin" aria-hidden="true"></i></a></li>
+      <li><a class="icon-link" href="mailto:uruenale@gmail.com" aria-label="Correo" title="uruenale@gmail.com"><i class="i-mail" aria-hidden="true"></i></a></li>
+      <li><a class="icon-link" href="https://github.com/AlejaUruena" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub"><i class="i-github" aria-hidden="true"></i></a></li>
+    </ul>
+    <span class="copyright">© <span id="year">2026</span> Alejandra Urueña</span>
+  </div>
+</footer>
+
+<script src="../../js/vendor/lenis.min.js"></script>
+<script src="../../js/main.js"></script>
+</body>
+</html>

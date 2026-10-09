@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Content Security Policy. GitHub Pages cannot send HTTP headers, so this
+     is delivered as a meta tag. It is defence in depth, not a fix for a known
+     hole: the site has no inline <script> and no on* handlers, which is what
+     makes a strict script-src 'self' possible at all. Effect: no third-party
+     script can execute, and the contact form can only post to Web3Forms.
+     'unsafe-inline' is needed for style only, because of the inline style=
+     attributes still in the markup; it does not weaken script-src.
+     NOTE: frame-ancestors is deliberately absent — browsers ignore it when
+     CSP arrives in a meta tag, so writing it here would be decoration.
+     If you add a new external host (a captcha, an embed, a font CDN), add it
+     to the matching directive here in EVERY page or it will be blocked. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; connect-src 'self' https://api.web3forms.com; form-action 'self' https://api.web3forms.com; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
+
+<!-- TEMPORARY: keeps search engines out while the case studies are still being written.
+     DELETE this line once the project pages are done. -->
+<meta name="robots" content="noindex">
+
+<!-- The h1 is a greeting, so the descriptive line lives here, where search
+     results and link previews read it. -->
+<title>Alejandra Urueña — Technical UX/UI Designer</title>
+<meta name="description" content="Technical Designer specializing in UX/UI for digital media and games. User-centered design, prototyping and storytelling — designed and built.">
+
+<meta property="og:title" content="Alejandra Urueña — Technical UX/UI Designer">
+<meta property="og:description" content="Technical Designer specializing in UX/UI for digital media and games.">
+<meta property="og:type" content="website">
+<!-- <meta property="og:image" content="https://alejauruena.github.io/portfolio/assets/og-image.png"> -->
+
+<link rel="stylesheet" href="../css/style.css">
+<link rel="icon" href="../favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/png" href="../assets/cursor/icon-180.png" sizes="180x180">
+<link rel="apple-touch-icon" href="../assets/cursor/apple-touch-icon.png">
+
+<link rel="alternate" hreflang="en" href="https://alejauruena.github.io/portfolio/index.html">
+<link rel="alternate" hreflang="es" href="https://alejauruena.github.io/portfolio/es/index.html">
+<link rel="alternate" hreflang="x-default" href="https://alejauruena.github.io/portfolio/index.html">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Saltar al contenido</a>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html">
+      <span class="nav-name">Alejandra&nbsp;Urueña</span>
+      <span class="nav-role">Technical UX/UI Designer</span>
+    </a>
+    <div class="nav-right">
+      <!-- Present in the markup but hidden: js/main.js unhides it and only
+           then switches the list into a panel. Without JS the three links
+           stay visible, so the nav can never end up unreachable. -->
+      <button class="nav-toggle" type="button" hidden
+              aria-expanded="false" aria-controls="nav-menu" aria-label="Open menu">
+        <span class="nav-toggle-bars" aria-hidden="true"></span>
+      </button>
+      <ul class="nav-links" id="nav-menu">
+        <li><a href="#work">Proyectos</a></li>
+        <li><a href="about.html">Sobre mí</a></li>
+        <li><a href="#contact">Contacto</a></li>
+        <!-- ART goes here once the section exists. A menu item that leads
+             nowhere is worse than no menu item. -->
+      </ul>
+      <!-- Language switch. /es/ ya existe: el enlace ES lleva a la misma pagina traducida. -->
+      <div class="lang-switch">
+        <a href="../index.html" hreflang="en">EN</a>
+        <span aria-current="true">ES</span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-text">
+    <h1 class="hero-line">Diseños que cuentan historias</h1>
+
+    <p class="hero-sub">
+      Diseño experiencias que conectan con las personas, y las construyo con código.
+    </p>
+
+    <!-- No "Tools" label: the marks and names carry it. -->
+    <ul class="tool-list">
+      <li class="tool"><i class="i-figma" aria-hidden="true"></i>Figma</li>
+      <li class="tool"><i class="i-unity" aria-hidden="true"></i>Unity</li>
+      <li class="tool"><i class="i-unreal" aria-hidden="true"></i>Unreal Engine</li>
+      <li class="tool">HTML/CSS</li>
+      <li class="tool"><i class="i-adobe" aria-hidden="true"></i>Adobe</li>
+    </ul>
+
+    <!-- These are entry points, not a second copy of the filter: they jump to
+         Work with a vertical already chosen. The tabs inside Work stay, for
+         switching once you are there. -->
+    <div class="btn-row">
+      <a class="btn" href="#work" data-enter="product">Producto Digital</a>
+      <a class="btn" href="?v=games#work" data-enter="games">Videojuegos</a>
+    </div>
+    </div>
+
+    <!-- Was its own band between the hero and Work. As a panel in the hero's
+         lower right it says the same thing without spending a screen on it. -->
+    <aside class="hero-note">
+      <p class="hero-note-lead">Hola, soy Ale, Technical Designer especializada en UX/UI para medios digitales y videojuegos.</p>
+      <p>¿Tienes un juego, un sitio web o una experiencia interactiva que necesite subir de nivel con diseño y código? Yo te ayudo.</p>
+    </aside>
+  </div>
+</header>
+
+<!-- ============ INTRO ============ -->
+
+<!-- ============ WORK ============ -->
+<section id="work" data-cascade=".section-title, .verticals, .p-row">
+  <div class="wrap">
+    <h2 class="section-title">Proyectos destacados</h2>
+
+    <!-- Vertical filter. Swaps the list in place: no reload, no scroll jump.
+         Digital Product is the default; index.html?v=games opens on Games,
+         which is the link to send when applying to games roles. -->
+    <div class="verticals" role="tablist" aria-label="Verticales de proyecto">
+      <button class="vertical-btn" role="tab" id="tab-product"
+              aria-controls="panel-product" aria-selected="true" data-vertical="product">
+        Producto Digital
+      </button>
+      <button class="vertical-btn" role="tab" id="tab-games"
+              aria-controls="panel-games" aria-selected="false" data-vertical="games">
+        Videojuegos
+      </button>
+    </div>
+
+    <!-- ---------- DIGITAL PRODUCT ---------- -->
+    <div class="p-index-list" id="panel-product" role="tabpanel" aria-labelledby="tab-product">
+      <div class="p-row is-static">
+        <span class="p-head">
+          <span class="p-index" aria-hidden="true"></span>
+          <span class="p-title">Universo Maloka</span>
+          <span class="p-kind">Proyecto en equipo</span>
+        </span>
+        <span class="p-body">
+          <span class="p-text">
+            <span class="p-copy">En esta app de mapa gamificada para el museo interactivo de ciencia y tecnología Maloka, colaboré con UI Art y prototipos para que las familias encuentren las salas más rápido.</span>
+            <span class="tags">
+            <span class="tag tag-tool">Figma</span>
+            <span class="tag tag-tool">Prototipado en papel</span>
+            </span>
+          </span>
+        </span>
+        <div class="p-media">
+          <img src="../assets/thumbs/maloka.jpg" alt="Universo Maloka app screens" loading="lazy" decoding="async">
+          <video class="thumb-motion" muted playsinline preload="none"
+                 poster="../assets/thumbs/maloka.jpg" aria-hidden="true">
+            <source src="../assets/thumbs/maloka.mp4" type='video/mp4; codecs="avc1.64001F"'>
+            <source src="../assets/thumbs/maloka.webm" type='video/webm; codecs="vp9"'>
+          </video>
+        </div>
+      </div>
+      <div class="p-row is-static">
+        <span class="p-head">
+          <span class="p-index" aria-hidden="true"></span>
+          <span class="p-title">Necronomicón</span>
+          <span class="p-kind">Proyecto individual</span>
+        </span>
+        <span class="p-body">
+          <span class="p-text">
+            <span class="p-copy">For this lovecraftian-inspired app, I designed and prototyped UI to solve pain points in table top RPG players' journey.</span>
+            <span class="tags">
+            <span class="tag tag-tool">Figma</span>
+            <span class="tag tag-tool">Prototipado en papel</span>
+            </span>
+          </span>
+        </span>
+        <div class="p-media">
+          <img src="../assets/thumbs/necronomicon.jpg" alt="Necronomicón character sheet and creature screens" loading="lazy" decoding="async">
+          <video class="thumb-motion" muted playsinline preload="none"
+                 poster="../assets/thumbs/necronomicon.jpg" aria-hidden="true">
+            <source src="../assets/thumbs/necronomicon.mp4" type='video/mp4; codecs="avc1.64001F"'>
+            <source src="../assets/thumbs/necronomicon.webm" type='video/webm; codecs="vp9"'>
+          </video>
+        </div>
+      </div>
+      <div class="p-row is-static">
+        <span class="p-head">
+          <span class="p-index" aria-hidden="true"></span>
+          <span class="p-title">Umbrella Corp Web</span>
+          <span class="p-kind">Proyecto individual</span>
+        </span>
+        <span class="p-body">
+          <span class="p-text">
+            <span class="p-copy">Creé iconografía propia y seguí la identidad visual del cliente en un sitio construido con diseño responsive. La meta era tomar una corporación ficticia y traerla a la vida.</span>
+            <span class="tags">
+            <span class="tag tag-tool">Figma</span>
+            <span class="tag tag-tool">Miro</span>
+            </span>
+          </span>
+        </span>
+        <div class="p-media">
+          <img src="../assets/thumbs/umbrella-corp.jpg" alt="Umbrella Corp site shown across desktop, tablet and phone" loading="lazy" decoding="async">
+          <video class="thumb-motion" muted playsinline preload="none"
+                 poster="../assets/thumbs/umbrella-corp.jpg" aria-hidden="true">
+            <source src="../assets/thumbs/umbrella-corp.mp4" type='video/mp4; codecs="avc1.64001F"'>
+            <source src="../assets/thumbs/umbrella-corp.webm" type='video/webm; codecs="vp9"'>
+          </video>
+        </div>
+      </div>
+      <div class="p-row is-static">
+        <span class="p-head">
+          <span class="p-index" aria-hidden="true"></span>
+          <span class="p-title">Neuronautas</span>
+          <span class="p-kind">Proyecto en equipo</span>
+        </span>
+        <span class="p-body">
+          <span class="p-text">
+            <span class="p-copy">Para promover el aprecio por el espectro de la neurodivergencia, aporté prototipado en papel e implementación de UI en esta experiencia interactiva con Arduino.</span>
+            <span class="tags">
+            <span class="tag tag-tool">Figma</span>
+            <span class="tag tag-tool">Unity</span>
+            </span>
+          </span>
+        </span>
+        <div class="p-media">
+          <div class="thumb-empty">[ miniatura pendiente ]</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------- GAME UI ---------- -->
+    <div class="p-index-list" id="panel-games" role="tabpanel" aria-labelledby="tab-games" hidden>
+      <a class="p-row" href="projects/green-code.html">
+        <span class="p-head">
+          <span class="p-index" aria-hidden="true"></span>
+          <span class="p-title">GreenCode: Play &amp; Learn</span>
+          <span class="p-kind">Case Study</span>
+          <span class="p-more">Ver más <span class="p-more-arrow" aria-hidden="true">&#8594;</span></span>
+        </span>
+        <span class="p-body">
+          <span class="p-text">
+            <span class="p-copy">Para esta app educativa de móvil y escritorio prototipé mejoras de UX para una nueva función de editor de niveles. También trabajé de cerca con el cliente y producción para rediseñar mecánicas dentro de un lenguaje de programación por bloques que enseña pensamiento computacional a niñas, niños y adolescentes.</span>
+            <span class="tags">
+            <span class="tag tag-tool">Figma</span>
+            <span class="tag tag-tool">User flows</span>
+            <span class="tag tag-tool">Prototipado</span>
+            </span>
+          </span>
+        </span>
+        <div class="p-media">
+          <img src="../assets/thumbs/green-code.jpg" alt="A level built in the Green Code editor: grid with crops and hazards, action-requirement pins and the level timer" loading="lazy" decoding="async">
+          <video class="thumb-motion" muted playsinline preload="none"
+                 poster="../assets/thumbs/green-code.jpg" aria-hidden="true">
+            <source src="../assets/thumbs/green-code.webm" type='video/webm; codecs="vp9"'>
+            <source src="../assets/thumbs/green-code.mp4" type='video/mp4; codecs="avc1.64001F"'>
+          </video>
+        </div>
+      </a>
+      <!-- Guitar Hero III: apagado mientras se pulen las figuras pendientes y el
+           enlace del prototipo, que hoy apunta a "#".
+           Para reactivarlo: cambiar esta fila de div a enlace (clase p-row sin
+           is-static, href a projects/guitar-hero-iii.html), devolver el pill
+           p-more dentro de p-head, y restituir los data-prev / data-next de
+           projects/green-code.html, donde quedaron anotados.
+           La pagina projects/guitar-hero-iii.html sigue intacta. -->
+      <div class="p-row is-static">
+        <span class="p-head">
+          <span class="p-index" aria-hidden="true"></span>
+          <span class="p-title">Guitar Hero III — UI Redesign</span>
+          <span class="p-kind">Case Study</span>
+        </span>
+        <span class="p-body">
+          <span class="p-text">
+            <span class="p-copy">En este proyecto asumí el reto de mejorar la navegación y la usabilidad del HUD, la pausa y el menú principal, modernizando el estilo original sin perder su identidad.</span>
+            <span class="tags">
+            <span class="tag tag-tool">Figma</span>
+            <span class="tag tag-tool">Placeholders con GenAI</span>
+            </span>
+          </span>
+        </span>
+        <div class="p-media">
+          <img src="../assets/thumbs/guitar-hero-iii.jpg" alt="Redesigned Guitar Hero III main menu" loading="lazy" decoding="async">
+          <video class="thumb-motion" muted playsinline preload="none"
+                 poster="../assets/thumbs/guitar-hero-iii.jpg" aria-hidden="true">
+            <source src="../assets/thumbs/guitar-hero-iii.webm" type='video/webm; codecs="vp9"'>
+            <source src="../assets/thumbs/guitar-hero-iii.mp4" type='video/mp4; codecs="avc1.64001F"'>
+          </video>
+        </div>
+      </div>
+      <div class="p-row is-static">
+        <span class="p-head">
+          <span class="p-index" aria-hidden="true"></span>
+          <span class="p-title">Kungatá</span>
+          <span class="p-kind">Proyecto en equipo</span>
+        </span>
+        <span class="p-body">
+          <span class="p-text">
+            <span class="p-copy">En este roguelike de acción diseñé mecánicas, implementé menús y UI dinámica, y desarrollé IA de enemigos, sistemas de diálogo e interacción con objetos en Unity.</span>
+            <span class="tags">
+            <span class="tag tag-tool">Prototipado en papel</span>
+            <span class="tag tag-tool">Unity</span>
+            <span class="tag tag-tool">C#</span>
+            </span>
+          </span>
+        </span>
+        <div class="p-media">
+          <img src="../assets/thumbs/kungata.jpg" alt="Kungatá title sequence" loading="lazy" decoding="async">
+          <video class="thumb-motion" muted playsinline preload="none"
+                 poster="../assets/thumbs/kungata.jpg" aria-hidden="true">
+            <source src="../assets/thumbs/kungata.mp4" type='video/mp4; codecs="avc1.64001F"'>
+            <source src="../assets/thumbs/kungata.webm" type='video/webm; codecs="vp9"'>
+          </video>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ABOUT ============ -->
+
+<!-- ============ CONTACT ============ -->
+<section id="contact">
+  <div class="wrap">
+    <div class="contact-body" data-cascade=".section-title, .contact-line, .contact-form">
+      <h2 class="section-title">¿Te gusta lo que ves?</h2>
+      <p class="contact-line">¡Hablemos!</p>
+
+      <!-- A static site cannot receive a POST on its own, so the submission
+           goes to Web3Forms. The endpoint below is the same for everyone;
+           what identifies this form is the access_key on the next line.
+           PASTE YOUR ACCESS KEY IN THE value="" BELOW — that is the only
+           edit needed to turn the form on. The key is public by design:
+           it can only send mail to the address it was registered with.
+
+           Without JS this posts natively and Web3Forms shows its own
+           confirmation; with JS it posts in the background and answers
+           in place, which keeps people on the page. -->
+      <form class="contact-form" action="https://api.web3forms.com/submit" method="POST" novalidate>
+        <input type="hidden" name="access_key" value="113a87e3-f549-46a8-bc3e-b3dce1095770">
+        <input type="hidden" name="subject" value="Nuevo mensaje desde tu portafolio (ES)">
+        <input type="hidden" name="from_name" value="Portfolio contact form">
+
+        <div class="field">
+          <label for="cf-name">Nombre</label>
+          <input id="cf-name" name="name" type="text" autocomplete="name" required>
+        </div>
+        <div class="field">
+          <label for="cf-email">Correo</label>
+          <input id="cf-email" name="email" type="email" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="cf-msg">Mensaje</label>
+          <textarea id="cf-msg" name="message" rows="4" required></textarea>
+        </div>
+
+        <!-- Web3Forms' spam trap. It rejects any submission where `botcheck`
+             is ticked; bots tick every checkbox they find. Their API requires
+             this exact name and display:none. tabindex and aria-hidden keep
+             it away from keyboards and screen readers. -->
+        <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" aria-hidden="true">
+
+        <button class="btn" type="submit">Enviar mensaje</button>
+        <p class="form-status" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <ul class="social social-sm">
+      <li><a class="icon-link" href="https://www.linkedin.com/in/aleja-uruena/" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><i class="i-linkedin" aria-hidden="true"></i></a></li>
+      <li><a class="icon-link js-copy-mail" href="mailto:uruenale@gmail.com" data-copy="uruenale@gmail.com" aria-label="Email — click to copy the address" title="uruenale@gmail.com"><i class="i-mail" aria-hidden="true"></i><span class="copy-toast" role="status" aria-live="polite"></span></a></li>
+      <li><a class="icon-link" href="https://github.com/AlejaUruena" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub"><i class="i-github" aria-hidden="true"></i></a></li>
+    </ul>
+    <span class="copyright">© <span id="year">2026</span> Alejandra Urueña</span>
+  </div>
+</footer>
+
+<script src="../js/vendor/lenis.min.js"></script>
+<script src="../js/main.js"></script>
+</body>
+</html>
