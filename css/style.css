@@ -6,10 +6,27 @@
    Re-theming the whole site means editing :root and nothing else.
    ============================================================ */
 
-/* All four faces come from Google Fonts — nothing to self-host.
-   BBH Bartle (display headings) · Michroma (labels, nav) ·
-   Aleo (body) · Alumni Sans SC (tags). */
-@import url('https://fonts.googleapis.com/css2?family=BBH+Bartle&family=Michroma&family=Aleo:ital,wght@0,400;0,500;0,600;1,400&family=Alumni+Sans+SC:ital,wght@0,400;0,600;1,400&display=swap');
+/* Michroma (labels, nav) · Aleo (body) · Alumni Sans SC (tags) vienen de
+   Google Fonts. BBH Bartle NO: la versión de Google sólo trae ASCII, así que
+   el español le rompía los titulares (ver @font-face abajo). */
+@import url('https://fonts.googleapis.com/css2?family=Michroma&family=Aleo:ital,wght@0,400;0,500;0,600;1,400&family=Alumni+Sans+SC:ital,wght@0,400;0,600;1,400&display=swap');
+
+/* BBH Bartle auto-hospedada y extendida con los 16 glifos que el español
+   necesita (ñÑ, vocales acentuadas, üÜ, ¿¡). Los glifos están DERIVADOS de
+   formas que ya existían dentro de la propia fuente — no dibujados de cero —
+   así que conservan el grosor y el carácter del tipo.
+   Licencia SIL OFL 1.1, sin Reserved Font Name: la copia extendida es legal
+   siempre que assets/fonts/OFL.txt viaje con ella. No la renombres a algo que
+   contenga "BBH Bartle" si algún día la redistribuyes por separado.
+   Para regenerarla: python tools/extender-fuente.py <bartle.woff2> <salida.woff2>
+   Al estar en el propio dominio, font-src 'self' del CSP ya la cubre. */
+@font-face {
+  font-family: 'BBH Bartle';
+  src: url('../assets/fonts/bbh-bartle-extended.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
   /* --- Color: straight from the Figma frame --- */
@@ -38,11 +55,11 @@
   --cursor-hot:  #E8B94A;         /* horneado en star-gold.png */
 
   /* --- Type --- */
-  /* BBH Bartle has no ñ and no accented vowels, and font fallback happens
-     PER GLYPH — "Kungatá" would render as Kungat in Bartle plus a lone á in
-     the fallback face. So the split is by who wrote the string:
-       --font-display → copy I control, guaranteed ASCII (hero, section titles)
-       --font-proper  → project names, which are proper nouns and carry accents */
+  /* La Bartle auto-hospedada ya cubre ñ, vocales acentuadas y ¿¡, así que
+     --font-display aguanta español sin que el navegador meta otra tipografía
+     a mitad de palabra (el fallback de fuentes es POR GLIFO, no por bloque).
+     --font-proper sigue en Michroma por decisión de diseño, no por limitación:
+     los nombres de proyecto se leen como etiqueta, no como titular. */
   --font-display: 'BBH Bartle', 'Michroma', sans-serif;      /* BIG TITLES */
   --font-proper:  'Michroma', sans-serif;                     /* project names */
   --font-label:   'Michroma', sans-serif;                     /* TITLE / COPY labels */
